@@ -58,7 +58,6 @@ const router = useRouter();
 
 const passwdChange = computed(() => {
   if (password !== passwordAgain) {
-    console.log("两次密码不一致");
     return "密码不一致";
   }
 });

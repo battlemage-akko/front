@@ -1,8 +1,13 @@
 <script setup>
 import { Search } from "@element-plus/icons-vue";
-import { ref } from 'vue'
-
-const dialogVisible = ref(false)
+import { ref, defineProps } from "vue";
+import searchForm from "@/components/chat/components/private/components/searchForm.vue";
+const dialogVisible = ref(false);
+const props = defineProps({
+  AllMyFriends: {
+    type: Array,
+  },
+});
 </script>
 
 <template>
@@ -12,16 +17,15 @@ const dialogVisible = ref(false)
         <Plus />
       </el-icon>
       添加好友
-      <el-dialog v-model="dialogVisible" title="Tips" width="30%" draggable class="friendDialog">
-        <span>It's a draggable Dialog</span>
-        <template #footer>
-          <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="dialogVisible = false"
-              >Confirm</el-button
-            >
-          </span>
-        </template>
+      <el-dialog
+        draggable
+        v-model="dialogVisible"
+        title="添加好友"
+        width="30%"
+        class="friendDialog"
+      >
+        <searchForm />
+        <template #footer> </template>
       </el-dialog>
     </div>
     <div class="searchFriend">
@@ -41,13 +45,32 @@ const dialogVisible = ref(false)
         @close="handleClose"
       >
         <el-menu-item index="1">
-          <el-icon><Avatar /></el-icon>
-          <template #title>好友列表</template>
-        </el-menu-item>
-        <el-menu-item index="2">
           <el-icon><ChatLineRound /></el-icon>
           <template #title>最近联系</template>
         </el-menu-item>
+        <el-sub-menu index="2" :show-timeout="0" :hide-timeout="0">
+          <template #title>
+            <el-icon><Avatar /></el-icon>
+            <span>好友列表</span>
+          </template>
+          <el-menu-item
+            v-for="item in AllMyFriends"
+            :key="item.id"
+            class="friendCard"
+            :index="item.id"
+          >
+            <div class="eachFriend">
+              <span class="friendAvatar">
+                <img :src="item.avatar" alt="" />
+              </span>
+              <span>
+                <div class="friendName">
+                  {{ item.username }}
+                </div>
+              </span>
+            </div>
+          </el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </div>
   </div>
@@ -64,9 +87,10 @@ const dialogVisible = ref(false)
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    .friendDialog {
-      background-color: red;
+    ::v-deep .el-dialog {
+      border-radius: 5px;
+      box-shadow: $shadow;
+      min-width: 400px;
     }
   }
   .searchFriend {
@@ -74,20 +98,44 @@ const dialogVisible = ref(false)
   }
   #list {
     .listType {
+      border-right: none;
       .is-active {
-        background-color: rgb(235, 235, 235);
+        // background-color: rgb(235, 235, 235);
       }
+      .friendCard {
+        height: 60px;
+        padding: 0px 10px !important;
+        .eachFriend {
+          display: flex;
+          align-items: center;
+          .friendAvatar {
+            display: flex;
+            align-items: center;
+            img {
+              height: 45px;
+              width: 45px;
+              border-radius: 50px;
+            }
+          }
+          .friendName {
+            font-weight: 550 !important;
+            margin-left: 10px;
+            font-size: 20px;
+          }
+        }
+      }
+
       .el-menu-item {
-        color: rgb(54, 54, 54);
-        margin: 5px;
-        border-radius: 6px;
-        font-size: $FS2;
-        font-weight: 600;
-        height: 40px;
+        // color: rgb(54, 54, 54);
+        // margin: 5px;
+        // border-radius: 6px;
+        // font-size: $FS2;
+        // font-weight: 600;
+        // height: 40px;
       }
       .el-menu-item:hover {
-        border: 1px solid;
-        background-color: rgb(255, 255, 255);
+        // border: 1px solid;
+        // background-color: rgb(255, 255, 255);
       }
     }
   }

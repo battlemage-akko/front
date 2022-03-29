@@ -1,11 +1,28 @@
 <script setup>
-import firendsList from '@/components/chat/components/private/components/list.vue'
+import firendsList from '@/components/chat/components/private/components/list.vue';
+import { getAllFriends } from '@/api/auth';
+import { onMounted,ref } from 'vue';
+
+onMounted(()=> {
+  getAllMyFriends()
+})
+
+const AllMyFriends = ref([])
+
+const LoadingList = ref(true)
+
+const getAllMyFriends = () => {
+  getAllFriends({}).then(res => {
+    AllMyFriends.value = res.result
+    LoadingList.value = false
+  })
+}
 </script>
 <template>
   <div id="app-main">
     <el-container style="height:100%">
       <el-aside width="200px" class="main-aside">
-        <firendsList/>
+        <firendsList :AllMyFriends="AllMyFriends" v-loading="LoadingList"/>
       </el-aside>
       <el-container>
         <el-header class="private-header">

@@ -11,11 +11,10 @@ const store = useStore();
 const router = useRouter();
 
 const LogoutThisUser = () => {
-  console.log("logout")
   logout({
-    token:store.state.token
+    
   }).then(res => {
-    store.commit('clearUserInfo')
+    store.commit('setBlock')
     ElMessage({
         message: '登出成功',
         type: 'success',

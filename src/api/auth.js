@@ -32,9 +32,33 @@ export const getCode = (data) => {
     })
 }
 
+export const searchUser = (data) => {
+    return axios({
+        url: 'api/searchUser/',
+        method: 'POST',
+        data,
+    })
+}
+
 export const check = (data) => {
     return axios({
         url: 'api/check/',
+        method: 'POST',
+        data,
+    })
+}
+
+export const addFriend = (data) => {
+    return axios({
+        url: 'api/addFriend/',
+        method: 'POST',
+        data,
+    })
+}
+
+export const getAllFriends = (data) => {
+    return axios({
+        url: 'api/getAllFriends/',
         method: 'POST',
         data,
     })

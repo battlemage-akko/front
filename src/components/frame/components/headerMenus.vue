@@ -10,7 +10,7 @@ const logout = () => {
 <template>
   <div id="header">
     <div class="logo">
-      <img src="@/assets/logo.png" alt="" />
+      <img src="https://cdn.lili-secretbase.com/pic/logo.png" alt="" />
     </div>
     <div class="searchInput">
       <el-input

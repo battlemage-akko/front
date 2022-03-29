@@ -31,7 +31,6 @@ const store = createStore({
       localStorage.token = token
     },
     getToken(state) {
-      console.log("getToken")
       if (!state.token) {
         state.token = localStorage.getItem('token')
       }
@@ -40,7 +39,7 @@ const store = createStore({
     setBlock(state) {
       state.token = ""
       localStorage.clear()
-      return state.token
+      clearUserInfo()
     }
   },
   actions: {

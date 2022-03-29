@@ -19,6 +19,7 @@ const loginThisUser = () => {
   login({'username':loginForm.username,'password':loginForm.password},{withCredentials:true}).then(res => {
     if (res.status === 1){
       store.commit('setUserInfo', res['userInfo']); 
+      store.commit('setToken', res['token']); 
       // localStorage.clear()
       // sessionStorage.clear()
       ElMessage({
@@ -52,7 +53,7 @@ const loginThisUser = () => {
       label-position="top"
     >
     <el-form-item prop="username">
-        <el-input placeholder="请输入用户名或手机号" v-model="loginForm.username"/>
+        <el-input placeholder="请输入用户名" v-model="loginForm.username"/>
       </el-form-item>
       <el-form-item prop="password">
         <el-input type="password" autocomplete="off" placeholder="请输入密码"  v-model="loginForm.password"/>
@@ -81,7 +82,7 @@ const loginThisUser = () => {
     background-color:#3b5998;
     border: none;
     font-weight: 600;
-    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
+    box-shadow: $shadow;
     &:hover {
       background-color:#2f4470;
     }

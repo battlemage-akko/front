@@ -48,7 +48,7 @@
 
   .lgMain {
     .lgHolder {
-      box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
+      box-shadow: $shadow;
       min-width: 400px;
       .lgLogo {
         display: flex;
