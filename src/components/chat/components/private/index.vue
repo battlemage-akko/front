@@ -24,17 +24,9 @@ const getAllMyFriends = () => {
       <el-aside width="200px" class="main-aside">
         <firendsList :AllMyFriends="AllMyFriends" v-loading="LoadingList"/>
       </el-aside>
-      <el-container>
-        <el-header class="private-header">
-            
-        </el-header>
-        <el-main class="private-body">
-
-        </el-main>
-        <el-footer class="private-footer">
-
-        </el-footer>
-      </el-container>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </div>
 </template>

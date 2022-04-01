@@ -46,7 +46,17 @@ const router = createRouter({
           component: () => import('@/components/chat/components/private/index.vue'),
           meta: {
             title: '主页',
-          }
+          },
+          children: [
+            {
+              path: 'Main/privateChat',
+              name: 'privateChat',
+              component: () => import('@/components/chat/components/private/components/chatMain.vue'),
+              meta: {
+                title: '私聊',
+              },
+            }
+          ]
         },
         {
           path: 'Group',

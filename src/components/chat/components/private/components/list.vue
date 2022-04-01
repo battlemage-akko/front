@@ -1,13 +1,23 @@
 <script setup>
 import { Search } from "@element-plus/icons-vue";
 import { ref, defineProps } from "vue";
+import { useRouter } from "vue-router";
 import searchForm from "@/components/chat/components/private/components/searchForm.vue";
 const dialogVisible = ref(false);
+const router = useRouter();
 const props = defineProps({
   AllMyFriends: {
     type: Array,
   },
 });
+
+const connect = (id) => {
+  router.push(
+    {
+      path: "privateChat"
+    }
+  )
+}
 </script>
 
 <template>
@@ -43,12 +53,9 @@ const props = defineProps({
         :collapse="isCollapse"
         @open="handleOpen"
         @close="handleClose"
+        router
       >
-        <el-menu-item index="1">
-          <el-icon><ChatLineRound /></el-icon>
-          <template #title>最近联系</template>
-        </el-menu-item>
-        <el-sub-menu index="2" :show-timeout="0" :hide-timeout="0">
+        <el-sub-menu :show-timeout="0" :hide-timeout="0">
           <template #title>
             <el-icon><Avatar /></el-icon>
             <span>好友列表</span>
@@ -57,6 +64,7 @@ const props = defineProps({
             v-for="item in AllMyFriends"
             :key="item.id"
             class="friendCard"
+            :route="{ name: 'privateChat' }"
             :index="item.id"
           >
             <div class="eachFriend">
