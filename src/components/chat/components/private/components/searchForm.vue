@@ -54,7 +54,7 @@ const searchUserF = () => {
           <img :src="item.avatar" alt="">
           <span>{{item.username}}</span>
           <el-button type="primary" @click="addThisUser(this.$store.state.userInfo.id,item.id)" :disable="false">
-            <span v-show="item.friend === 0">+好友</span>
+            <span v-show="item.friend === 0">+ 好友</span>
             <span v-show="item.friend === 1">已添加</span>
           </el-button>
       </div>

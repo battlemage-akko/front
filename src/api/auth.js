@@ -63,3 +63,11 @@ export const getAllFriends = (data) => {
         data,
     })
 }
+
+export const getThisFriendInfo = (data) => {
+    return axios({
+        url: 'api/getThisFriendInfo/',
+        method: 'POST',
+        data,
+    })
+}

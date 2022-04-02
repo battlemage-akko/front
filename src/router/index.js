@@ -49,7 +49,7 @@ const router = createRouter({
           },
           children: [
             {
-              path: 'Main/privateChat',
+              path: 'privateChat/:id',
               name: 'privateChat',
               component: () => import('@/components/chat/components/private/components/chatMain.vue'),
               meta: {

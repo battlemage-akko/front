@@ -2,7 +2,7 @@
 import asideMenus from '@/components/frame/components/asideMenus.vue'
 import headerMenus from '@/components/frame/components/headerMenus.vue'
 import chat from '@/components/chat/index.vue'
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import { logout } from '@/api/auth'
 import { ElMessage } from "element-plus";
 import { useStore } from 'vuex';

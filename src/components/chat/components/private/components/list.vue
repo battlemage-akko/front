@@ -12,12 +12,10 @@ const props = defineProps({
 });
 
 const connect = (id) => {
-  router.push(
-    {
-      path: "privateChat"
-    }
-  )
-}
+  router.push({
+    path: "privateChat",
+  });
+};
 </script>
 
 <template>
@@ -64,7 +62,7 @@ const connect = (id) => {
             v-for="item in AllMyFriends"
             :key="item.id"
             class="friendCard"
-            :route="{ name: 'privateChat' }"
+            :route="{ name: 'privateChat', params: { id : item.id } }"
             :index="item.id"
           >
             <div class="eachFriend">
