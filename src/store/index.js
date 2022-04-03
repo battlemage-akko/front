@@ -39,7 +39,8 @@ const store = createStore({
     setBlock(state) {
       state.token = ""
       localStorage.clear()
-      clearUserInfo()
+      state.userInfo = {}
+      localStorage.clear()
     }
   },
   actions: {

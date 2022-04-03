@@ -38,13 +38,13 @@ const initWebSocket = () => {
   websock.onclose = websocketClose;
 };
 
-const sendWebSocketMsg = (type = "text") => {
+const sendWebSocketMsg = () => {
   let message = {
     ...msgForm,
     user_id: store.state.userInfo.id,
     friend_id: friendId,
   };
-  message["type"] = type;
+  message["type"] = "T";
   console.log(message)
   websock.send(JSON.stringify(message));
   msgForm.msg = ""
@@ -66,8 +66,8 @@ const websocketOnMessage = (e) => {
 };
 const websocketOnOpen = (e) => {
   console.log("socke已连接");
-  msgForm.msg  = localStorage.getItem('token')
-  sendWebSocketMsg();
+  console.log("开始获取聊天记录");
+
 };
 const websocketOnError = (e) => {};
 const websocketClose = (e) => {

@@ -71,3 +71,19 @@ export const getThisFriendInfo = (data) => {
         data,
     })
 }
+
+export const changeAvatar = (data) => {
+    return axios({
+        url: 'api/changeAvatar/',
+        method: 'POST',
+        data,
+    })
+}
+
+export const getChatRecord  = (data) => {
+    return axios({
+        url: 'api/getChatRecord/',
+        method: 'POST',
+        data,
+    })
+}

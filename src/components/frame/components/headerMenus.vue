@@ -1,22 +1,28 @@
 <script setup>
-import { ref, defineEmits, watch } from "vue";
+import { ref, defineEmits, watch, reactive } from "vue";
+import avatarCropper from '@/components/chat/components/until/avatarCropper.vue';
 import { Search } from "@element-plus/icons-vue";
+import { VueCropper } from 'vue-cropper'
 const emit = defineEmits(["update", "delete"]);
 const logout = () => {
   emit("fatherMethod");
 };
 
 const upload = ref();
-const changeAvatar = ref(false);
-watch(upload.value, (newValue, oldValue) => {
-  if (upload.value) {
-    changeAvatar.value = true;
-  }
-});
+
+const avatarChange = ref(false);
+
+const closeAvatarDialog = (data) => {
+  console.log(data)
+  avatarChange.value = false
+  
+}
+console.log()
 </script>
 
 <template>
   <div id="header">
+    <avatarCropper :avatarChange="avatarChange" @closeAvatarDialog="closeAvatarDialog"></avatarCropper>
     <div class="logo">
       <img src="https://cdn.lili-secretbase.com/pic/logo.png" alt="" />
     </div>
@@ -55,20 +61,10 @@ watch(upload.value, (newValue, oldValue) => {
                 <span>设置</span>
               </el-menu-item>
               <el-menu-item index="4">
-                <el-icon><Picture /></el-icon>
-                <el-upload
-                  ref="upload"
-                  class="upload-demo"
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :limit="1"
-                  :on-exceed="handleExceed"
-                  :auto-upload="false"
-                  :show-file-list="false"
-                >
-                  <template #trigger>
-                    <span>更换头像</span>
-                  </template>
-                </el-upload>
+                <div @click="avatarChange = true">
+                  <el-icon><Picture /></el-icon>
+                  <span>更换头像</span>
+                </div>
               </el-menu-item>
               <el-menu-item index="5">
                 <el-icon><setting /></el-icon>
@@ -80,22 +76,6 @@ watch(upload.value, (newValue, oldValue) => {
       </el-popover>
     </div>
   </div>
-  <el-dialog
-    v-model="changeAvatar"
-    title="Tips"
-    width="30%"
-    :before-close="handleClose"
-  >
-    <span>This is a message</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >Confirm</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
 </template>
 
 <style lang="scss" scope>
