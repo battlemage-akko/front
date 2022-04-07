@@ -80,9 +80,9 @@ export const changeAvatar = (data) => {
     })
 }
 
-export const getChatRecord  = (data) => {
+export const getPrivateChatRecord  = (data) => {
     return axios({
-        url: 'api/getChatRecord/',
+        url: 'api/getPrivateChatRecord/',
         method: 'POST',
         data,
     })

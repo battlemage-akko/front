@@ -29,7 +29,7 @@ const getAllMyFriends = () => {
       <el-aside width="200px" class="main-aside">
         <firendsList :AllMyFriends="AllMyFriends" v-loading="LoadingList" />
       </el-aside>
-      <el-main style="padding: 0px">
+      <el-main class="main-container">
         <router-view :key="id"></router-view>
       </el-main>
     </el-container>
@@ -45,6 +45,10 @@ const getAllMyFriends = () => {
     height: 100%;
     width: 250px;
     border-right: $border2;
+  }
+  .main-container {
+    height: 100%;
+    padding: 0px
   }
 }
 </style>

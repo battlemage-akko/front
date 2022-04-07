@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive, watch,nextTick } from "vue";
+import { onMounted, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getThisFriendInfo, getPrivateChatRecord } from "@/api/auth";
 import { timestampToTime } from "@/utils/formatTime.js";
@@ -24,7 +24,9 @@ onMounted(() => {
   });
   initWebSocket();
 });
-
+watch(loadingRecord, (newValue, oldValue) => {
+  console.log(recordContainer.value)
+});
 let websock = "";
 let room_id =
   parseInt(friendId) > parseInt(store.state.userInfo.id)
@@ -82,10 +84,7 @@ const websocketOnOpen = (e) => {
       item.msgFormat = item.content;
       msgList.value.push(item);
     }
-    nextTick(() =>{
-      loadingRecord.value = false;
-      recordContainer.value.scrollTop = recordContainer.value.scrollHeight
-    })
+    loadingRecord.value = false;
   });
 };
 const websocketOnError = (e) => {};
@@ -103,10 +102,11 @@ const websocketClose = (e) => {
       {{ friendInfo.friendName }}
     </el-header>
     <el-main
+      class="private-body"
       v-loading="loadingRecord"
-      style="display: flex;height:0;flex-grow:1;padding:0px"
+      ref="recordContainer"
     >
-      <div class="private-body" ref="recordContainer"> 
+      <div> 
         <div
           v-for="(item, index) in msgList"
           :key="index"
@@ -166,7 +166,7 @@ const websocketClose = (e) => {
             placeholder="按回车发送"
             clearable
             class="inputMsg"
-            :disabled="loadingRecord"
+            :disabled="!loadingRecord"
           >
             <template #append>
               <el-button
@@ -174,7 +174,7 @@ const websocketClose = (e) => {
                 native-type="submit"
                 :icon="Check"
                 @click="sendWebSocketMsg"
-                :disabled="loadingRecord"
+                :disabled="!loadingRecord"
               />
             </template>
           </el-input>
@@ -195,15 +195,14 @@ const websocketClose = (e) => {
     font-size: 18px;
   }
   .private-body {
-    height: 100%;
+    height: 0;
+    flex-grow: 1;
     overflow-y: auto;
     border-bottom: $border2;
     padding: 0px;
-    flex: 1;
-    box-sizing: border-box;
     &::-webkit-scrollbar {
       /*滚动条整体样式*/
-      width: 5px;
+      width: 5px; /*高宽分别对应横竖滚动条的尺寸*/
       height: 1px;
     }
     &::-webkit-scrollbar-thumb {
@@ -226,7 +225,6 @@ const websocketClose = (e) => {
       }
       display: flex;
       padding: 10px;
-      margin: 10px;
       .saySomething {
         display: flex;
         flex-direction: column;
