@@ -6,6 +6,7 @@ import * as ElIconModules from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
+import lazyPlugin from 'vue3-lazy'
 import {
     check
 } from '/src/api/auth'
@@ -54,4 +55,8 @@ app.use(ElementPlus)
     .use(store)
     .use(Vuex)
     .use(Cookies)
+    .use(lazyPlugin, {
+        loading: '/loading.png',
+        error: '/error.png'
+      })
     .mount('#app')

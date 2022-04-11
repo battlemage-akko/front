@@ -80,6 +80,14 @@ export const changeAvatar = (data) => {
     })
 }
 
+export const uploadPicture = (data) => {
+    return axios({
+        url: 'api/uploadPicture/',
+        method: 'POST',
+        data,
+    })
+}
+
 export const getPrivateChatRecord  = (data) => {
     return axios({
         url: 'api/getPrivateChatRecord/',

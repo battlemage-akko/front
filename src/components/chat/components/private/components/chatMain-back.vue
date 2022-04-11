@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { getThisFriendInfo, getPrivateChatRecord } from "@/api/auth";
+import { getThisFriendInfo, getPrivateChatRecord,uploadPicture } from "@/api/auth";
 import { timestampToTime } from "@/utils/formatTime.js";
 import { useStore } from "vuex";
 import { Check } from "@element-plus/icons-vue";
