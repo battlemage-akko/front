@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from "vue";
 import { searchUser,addFriend } from "@/api/auth.js";
+import { ElMessage } from "element-plus";
 const searchForm = reactive({
   username: "",
 });
@@ -13,7 +14,8 @@ const addThisUser = (user_id,friend_id) => {
     user_id:user_id,
     friend_id:friend_id
   }).then(res =>{
-    console.log(res)
+    ElMessage.success(res.message);
+    
   })
 }
 const searchUserF = () => {
