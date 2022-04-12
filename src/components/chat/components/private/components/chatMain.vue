@@ -151,7 +151,7 @@ const websocketOnOpen = (e) => {
     }
     nextTick(() => {
       loadingRecord.value = false;
-      recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
+      // recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
     });
   });
 };
