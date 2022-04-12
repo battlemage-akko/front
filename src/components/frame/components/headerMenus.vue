@@ -13,11 +13,9 @@ const upload = ref();
 const avatarChange = ref(false);
 
 const closeAvatarDialog = (data) => {
-  console.log(data)
   avatarChange.value = false
   
 }
-console.log()
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup>
 import { Search } from "@element-plus/icons-vue";
-import { ref, defineProps } from "vue";
+import { ref, defineProps, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import searchForm from "@/components/chat/components/private/components/searchForm.vue";
 const dialogVisible = ref(false);
@@ -9,8 +9,10 @@ const props = defineProps({
   AllMyFriends: {
     type: Array,
   },
+  getAllMyFriends: {
+    type: Function,
+  },
 });
-
 const connect = (id) => {
   router.push({
     path: "privateChat",
@@ -32,7 +34,7 @@ const connect = (id) => {
         width="30%"
         class="friendDialog"
       >
-        <searchForm />
+        <searchForm :getAllMyFriends="getAllMyFriends" />
         <template #footer> </template>
       </el-dialog>
     </div>
@@ -62,7 +64,7 @@ const connect = (id) => {
             v-for="item in AllMyFriends"
             :key="item.id"
             class="friendCard"
-            :route="{ name: 'privateChat', params: { id : item.id } }"
+            :route="{ name: 'privateChat', params: { id: item.id } }"
             :index="item.id"
           >
             <div class="eachFriend">

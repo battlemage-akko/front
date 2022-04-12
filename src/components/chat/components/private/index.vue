@@ -16,6 +16,10 @@ const AllMyFriends = ref([]);
 
 const LoadingList = ref(true);
 
+const gettest = () => {
+  console.log('test')
+}
+
 const getAllMyFriends = () => {
   getAllFriends({}).then((res) => {
     AllMyFriends.value = res.result;
@@ -27,7 +31,7 @@ const getAllMyFriends = () => {
   <div id="app-main">
     <el-container style="height: 100%">
       <el-aside width="200px" class="main-aside">
-        <firendsList :AllMyFriends="AllMyFriends" v-loading="LoadingList" />
+        <firendsList :AllMyFriends="AllMyFriends" v-loading="LoadingList" :getAllMyFriends="getAllMyFriends"/>
       </el-aside>
       <el-main class="main-container">
         <router-view :key="id"></router-view>
