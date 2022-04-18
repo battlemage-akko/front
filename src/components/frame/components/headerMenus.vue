@@ -1,20 +1,16 @@
 <script setup>
 import { ref, defineEmits, watch, reactive } from "vue";
-import avatarCropper from '@/components/chat/components/until/avatarCropper.vue';
+import avatarCropper from '@/components/until/avatarCropper.vue';
 import { Search } from "@element-plus/icons-vue";
 import { VueCropper } from 'vue-cropper'
 const emit = defineEmits(["update", "delete"]);
 const logout = () => {
   emit("fatherMethod");
 };
-
 const upload = ref();
-
 const avatarChange = ref(false);
-
 const closeAvatarDialog = (data) => {
   avatarChange.value = false
-  
 }
 </script>
 
@@ -26,7 +22,6 @@ const closeAvatarDialog = (data) => {
     </div>
     <div class="searchInput">
       <el-input
-        v-model="input2"
         class="inputArea"
         placeholder="Type something"
         :prefix-icon="Search"
@@ -64,7 +59,13 @@ const closeAvatarDialog = (data) => {
                   <span>更换头像</span>
                 </div>
               </el-menu-item>
-              <el-menu-item index="5">
+              <el-menu-item index="4">
+                <div @click="avatarChange = true">
+                  <el-icon><Message /></el-icon>
+                  <span>信息</span>
+                </div>
+              </el-menu-item>
+              <el-menu-item index="100">
                 <el-icon><setting /></el-icon>
                 <span @click="logout">登出</span>
               </el-menu-item>

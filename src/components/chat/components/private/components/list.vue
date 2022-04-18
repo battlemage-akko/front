@@ -1,10 +1,24 @@
 <script setup>
 import { Search } from "@element-plus/icons-vue";
-import { ref, defineProps, onMounted } from "vue";
+import { ref, defineProps, onMounted, watch,reactive,computed } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import searchForm from "@/components/chat/components/private/components/searchForm.vue";
 const dialogVisible = ref(false);
+const store = useStore();
 const router = useRouter();
+const state = reactive({
+  //使用计算属性动态拿到vuex的值
+  channels: computed(() => {
+    return store.state.channels;
+  }),
+});
+watch(
+  ()=>state.channels,
+  (newValue, oldValue) => {
+    console.log(newValue, oldValue);
+  }
+);
 const props = defineProps({
   AllMyFriends: {
     type: Array,
@@ -55,7 +69,7 @@ const connect = (id) => {
         @close="handleClose"
         router
       >
-        <el-sub-menu :show-timeout="0" :hide-timeout="0">
+        <el-sub-menu :show-timeout="0" :hide-timeout="0" class="friendList">
           <template #title>
             <el-icon><Avatar /></el-icon>
             <span>好友列表</span>
@@ -66,6 +80,7 @@ const connect = (id) => {
             class="friendCard"
             :route="{ name: 'privateChat', params: { id: item.id } }"
             :index="item.id"
+
           >
             <div class="eachFriend">
               <span class="friendAvatar">
@@ -107,44 +122,48 @@ const connect = (id) => {
   #list {
     .listType {
       border-right: none;
-      .is-active {
-        // background-color: rgb(235, 235, 235);
-      }
-      .friendCard {
-        height: 60px;
-        padding: 0px 10px !important;
-        .eachFriend {
-          display: flex;
-          align-items: center;
-          .friendAvatar {
+      .friendList {
+        .friendCard {
+          height: 60px;
+          padding: 0px 10px !important;
+          border-radius: 100px;
+          margin: 10px;
+          .eachFriend {
             display: flex;
             align-items: center;
-            img {
-              height: 45px;
-              width: 45px;
-              border-radius: 50px;
+            .friendAvatar {
+              display: flex;
+              align-items: center;
+              img {
+                height: 45px;
+                width: 45px;
+                border-radius: 50px;
+              }
+            }
+            .friendName {
+              font-weight: 550 !important;
+              margin-left: 10px;
+              font-size: 20px;
             }
           }
-          .friendName {
-            font-weight: 550 !important;
-            margin-left: 10px;
-            font-size: 20px;
-          }
         }
+        // .is-active{
+        //   background-image: linear-gradient(to left, rgba(255,0,0,0), #B7CADB);
+        // }
       }
 
-      .el-menu-item {
-        // color: rgb(54, 54, 54);
-        // margin: 5px;
-        // border-radius: 6px;
-        // font-size: $FS2;
-        // font-weight: 600;
-        // height: 40px;
-      }
-      .el-menu-item:hover {
-        // border: 1px solid;
-        // background-color: rgb(255, 255, 255);
-      }
+      // .el-menu-item {
+      //   color: rgb(54, 54, 54);
+      //   margin: 5px;
+      //   border-radius: 6px;
+      //   font-size: $FS2;
+      //   font-weight: 600;
+      //   height: 40px;
+      // }
+      // .el-menu-item:hover {
+      //   border: 1px solid;
+      //   background-color: rgb(255, 255, 255);
+      // }
     }
   }
 }

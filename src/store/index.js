@@ -8,11 +8,30 @@ const store = createStore({
     token: '',
     isCollage: true,
     userInfo: JSON.parse(localStorage.getItem("userInfo")) || {},
+    channels:null,
+    friend: {
+      id:null,
+    }
   },
   getters: {
 
   },
   mutations: {
+    saveChannel(state,channel){
+      state.channels = channel
+      console.log('连接到'+state.channels)
+    },
+    saveFriend(state,friendId){
+      state.friend.id = friendId
+      console.log('friend.id'+state.friend.id)
+    },
+    clearChannel(state,channel){
+      state.channel = null
+      console.log('关闭'+state.channel+'的连接')
+      if(state.friend.id!=null){
+        state.friend.id = null
+      }
+    },
     toggleCollage(state, arr) {
       state.isCollage = !state.isCollage
     },

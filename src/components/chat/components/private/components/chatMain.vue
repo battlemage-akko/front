@@ -127,7 +127,6 @@ const websocketOnMessage = (e) => {
           recordContainer.value.scrollTop + 848 <=
             recordContainer.value.scrollHeight)
       ) {
-        console.log(1);
         recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
       }
     });
@@ -137,6 +136,8 @@ const websocketOnOpen = (e) => {
   getPrivateChatRecord({
     room_id: room_id,
   }).then((res) => {
+    store.commit("saveChannel", room_id);
+    store.commit("saveFriend", friendId);
     for (let item of res.record) {
       if (item.user_id == store.state.userInfo.id) {
         item.me = 1;
@@ -192,10 +193,27 @@ const websocketClose = (e) => {
   </el-dialog>
   <el-container class="privateChat-frame">
     <el-header class="private-header">
-      <el-icon style="padding-right: 10px; font-size: 20px">
-        <chat-line-square />
-      </el-icon>
-      {{ friendInfo.friendName }}
+      <span class="friendName">
+        <el-icon style="padding-right: 10px; font-size: 20px">
+          <chat-line-square />
+        </el-icon>
+        {{ friendInfo.friendName }}
+      </span>
+      <el-menu
+        :default-active="activeIndex"
+        class="toolList"
+        mode="horizontal"
+        @select="handleSelect"
+
+      >
+        <el-menu-item index="2" class="toolListItem"
+          ><el-icon><Phone /></el-icon
+        ></el-menu-item>
+        <el-sub-menu index="1" class="toolListItem">
+          <template #title>新建工作区</template>
+          <el-menu-item index="2-1">item one</el-menu-item>
+        </el-sub-menu>
+      </el-menu>
     </el-header>
     <el-main
       v-loading="loadingRecord"
@@ -241,7 +259,7 @@ const websocketClose = (e) => {
                   >
                     <template #error>
                       <div class="image-slot">
-                        <el-icon><Picture/></el-icon>
+                        <el-icon><Picture /></el-icon>
                       </div> </template
                   ></el-image>
                 </div>
@@ -270,7 +288,6 @@ const websocketClose = (e) => {
       >
         <el-form-item prop="msg" style="height: 100%; display: flex">
           <el-input
-            autofocus
             v-model="msgForm.msg"
             placeholder="按回车发送"
             clearable
@@ -319,8 +336,24 @@ const websocketClose = (e) => {
     height: 50px;
     border-bottom: $border2;
     display: flex;
-    align-items: center;
+    justify-content: space-between;
     font-size: 18px;
+    .friendName {
+      display: flex;
+      align-items: center;
+    }
+    .toolList {
+      .toolListItem {
+        padding: 0px 10px;
+        &:hover {
+          background:none
+        }
+      }
+      .is-active {
+        border: none;
+        background: none;
+      }
+    }
   }
   .private-body {
     height: 100%;
@@ -415,8 +448,6 @@ const websocketClose = (e) => {
     input {
       height: 100%;
       background-color: rgb(235, 235, 235);
-      &:focus {
-      }
     }
     .uploadPicture {
       font-size: 20px;

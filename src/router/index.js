@@ -1,23 +1,24 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory
+} from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/login.vue'
 
 const routerHistory = createWebHistory()
 const router = createRouter({
   history: routerHistory,
-  routes: [
-    {
+  routes: [{
       path: '/',
       component: Login,
       redirect: 'Login',
-      children: [
-        {
+      children: [{
           path: 'Login',
           name: 'Login',
           component: () => import('@/components/login/login.vue'),
           meta: {
             title: 'Login',
-            goHome:true,
+            goHome: true,
           }
         },
         {
@@ -26,7 +27,7 @@ const router = createRouter({
           component: () => import('@/components/login/Register.vue'),
           meta: {
             title: 'Login',
-            goHome:true,
+            goHome: true,
           }
         },
       ]
@@ -37,26 +38,23 @@ const router = createRouter({
       name: 'home',
       redirect: '/home/Main',
       meta: {
-        requireAuth:true,
+        requireAuth: true,
       },
-      children: [
-        {
+      children: [{
           path: 'Main',
           name: 'Main',
           component: () => import('@/components/chat/components/private/index.vue'),
           meta: {
             title: '主页',
           },
-          children: [
-            {
-              path: 'privateChat/:id',
-              name: 'privateChat',
-              component: () => import('@/components/chat/components/private/components/chatMain.vue'),
-              meta: {
-                title: '私聊',
-              },
-            }
-          ]
+          children: [{
+            path: 'privateChat/:id',
+            name: 'privateChat',
+            component: () => import('@/components/chat/components/private/components/chatMain.vue'),
+            meta: {
+              title: '私聊',
+            },
+          }]
         },
         {
           path: 'Group',
@@ -67,6 +65,17 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+      path: '/setting',
+      children: [{
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/components/until/setting/components/profile.vue'),
+        meta: {
+          requireAuth: true,
+        }
+      }]
     },
   ]
 })

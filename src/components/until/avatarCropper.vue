@@ -86,7 +86,8 @@ export default {
         centerBox: true, // 截图框被限制在图片里面
         canMove: true, // 上传图片不允许拖动
         canScale: true, // 上传图片不允许滚轮缩放
-      }
+      },
+    change:false,
     }
   },
  
@@ -129,7 +130,8 @@ export default {
             userInfo.avatar = res.url
             localStorage.setItem("userInfo", JSON.stringify(userInfo))
             this.$store.commit('getUserInfo');
-            this.closeDialog(data)
+            this.change = true
+            this.closeDialog()
         })
       });
       // 获取截图的 blob 数据
@@ -142,9 +144,9 @@ export default {
       this.$refs.uploadBtn.$el.click()
     },
     // 关闭弹框
-    closeDialog(data) {
+    closeDialog() {
     //   this.$emit('update:avatarChange', false)
-      this.$emit('closeAvatarDialog', data)
+      this.$emit('closeAvatarDialog', this.change)
       this.options.img = ''
     }
   }

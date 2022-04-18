@@ -1,4 +1,21 @@
+
+<script setup>
+import { ref, computed } from "vue";
+import settingDialog from "@/components/until/setting/setting.vue"
+import { useStore } from "vuex";
+const store = useStore();
+
+function toggleCollage() {
+  store.commit("toggleCollage", null);
+}
+const openSetting = ref(false)
+const closeSetting = () => {
+  openSetting.value = false
+}
+</script>
+
 <template>
+  <settingDialog :openSetting="openSetting" :closeSetting="closeSetting"/>
   <el-menu
     default-active="2"
     class="aside-Menus"
@@ -30,23 +47,13 @@
     </el-menu-item>
     <li style="flex: 1; border-bottom: 1px solid rgba(0, 0, 0, 0.1)"></li>
   </el-menu>
-  <div class="menu-items hive" @click="toggleCollage">
+  <div class="menu-items hive" @click="openSetting = true">
     <el-icon><Setting /></el-icon>
   </div>
   <div class="menu-items hive" @click="toggleCollage">
     <el-icon><Expand /></el-icon>
   </div>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-import { useStore } from "vuex";
-const store = useStore();
-
-function toggleCollage() {
-  store.commit("toggleCollage", null);
-}
-</script>
 
 <style lang="scss" scope>
 .menu-items {
@@ -55,8 +62,6 @@ function toggleCollage() {
   height: 50px;
   background-color: white;
   display: flex;
-  .is-active {
-  }
   .chosenBg {
     width: 50%;
     height: 120%;
@@ -84,8 +89,6 @@ function toggleCollage() {
     font-size: $FS2;
     color: white;
   }
-}
-.menu-items:hover {
 }
 .hive {
   font: 30px;
