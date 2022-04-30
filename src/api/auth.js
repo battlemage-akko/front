@@ -16,6 +16,14 @@ export const signUp = (data) => {
     })
 }
 
+export const getUserSig= (data) => {
+    return axios({
+        url: 'api/getUserSig/',
+        method: 'POST',
+        data,
+    })
+}
+
 export const logout = (data) => {
     return axios({
         url: 'api/logout/',

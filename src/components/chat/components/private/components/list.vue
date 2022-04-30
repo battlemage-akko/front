@@ -1,24 +1,14 @@
 <script setup>
+
 import { Search } from "@element-plus/icons-vue";
-import { ref, defineProps, onMounted, watch,reactive,computed } from "vue";
+import { ref, defineProps, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import searchForm from "@/components/chat/components/private/components/searchForm.vue";
+
 const dialogVisible = ref(false);
 const store = useStore();
 const router = useRouter();
-const state = reactive({
-  //使用计算属性动态拿到vuex的值
-  channels: computed(() => {
-    return store.state.channels;
-  }),
-});
-watch(
-  ()=>state.channels,
-  (newValue, oldValue) => {
-    console.log(newValue, oldValue);
-  }
-);
 const props = defineProps({
   AllMyFriends: {
     type: Array,
@@ -62,25 +52,24 @@ const connect = (id) => {
     </div>
     <div id="list">
       <el-menu
-        default-active="2"
         class="listType"
         :collapse="isCollapse"
         @open="handleOpen"
         @close="handleClose"
         router
+        :defaultOpeneds="this.$route.params.id?'1':''"
       >
-        <el-sub-menu :show-timeout="0" :hide-timeout="0" class="friendList">
+        <el-sub-menu :show-timeout="0" :hide-timeout="0" class="friendList" index="1">
           <template #title>
             <el-icon><Avatar /></el-icon>
             <span>好友列表</span>
           </template>
           <el-menu-item
-            v-for="item in AllMyFriends"
+            v-for="(item,key,index) in AllMyFriends"
             :key="item.id"
-            class="friendCard"
             :route="{ name: 'privateChat', params: { id: item.id } }"
             :index="item.id"
-
+            :class="item.id == this.$store.state.friend.id?'friendCard is-active':'friendCard'"
           >
             <div class="eachFriend">
               <span class="friendAvatar">
@@ -110,7 +99,8 @@ const connect = (id) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    ::v-deep .el-dialog {
+
+    .el-dialog {
       border-radius: 5px;
       box-shadow: $shadow;
       min-width: 400px;
@@ -141,15 +131,16 @@ const connect = (id) => {
               }
             }
             .friendName {
-              font-weight: 550 !important;
+              font-weight: 500 !important;
               margin-left: 10px;
-              font-size: 20px;
+              font-size: 17px;
+              font-weight: 500;
             }
           }
         }
-        // .is-active{
-        //   background-image: linear-gradient(to left, rgba(255,0,0,0), #B7CADB);
-        // }
+        .is-active{
+          background-image: linear-gradient(to left, rgba(255,0,0,0), #dddddd);
+        }
       }
 
       // .el-menu-item {

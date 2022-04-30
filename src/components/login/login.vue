@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive,onMounted } from 'vue'
-import { login } from '@/api/auth'
+import { login, getUserSig } from '@/api/auth'
 import { ElMessage } from 'element-plus'
 import Cookies from 'js-cookie'
 import { useRouter } from "vue-router"
@@ -18,6 +18,9 @@ const loginThisUser = () => {
   loading = !loading
   login({'username':loginForm.username,'password':loginForm.password},{withCredentials:true}).then(res => {
     if (res.status === 1){
+      getUserSig({ id: res['userInfo']['id'] }).then((userSigResponse) => {
+        store.commit('setTRTCInfo',userSigResponse)
+      });
       store.commit('setUserInfo', res['userInfo']); 
       store.commit('setToken', res['token']); 
       // localStorage.clear()

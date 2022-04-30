@@ -12,13 +12,14 @@ import { useStore } from "vuex";
 import { Check } from "@element-plus/icons-vue";
 const store = useStore();
 const router = useRouter();
-const msgList = ref([]);
+const msgList = reactive([]);
 const friendId = router.currentRoute.value.params.id;
 const friendInfo = ref({});
 const loadingRecord = ref(true);
 const recordContainer = ref(null);
 const showPicture = ref(false);
 const picture = ref(null);
+let imgRefs = reactive({})
 const pictureButter = ref({
   content: "",
   file: "",
@@ -61,6 +62,9 @@ const sendPicture = () => {
     recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
   });
 };
+const computeHeight = (e) => {
+  console.log(e);
+};
 const checkPicture = (file) => {
   const isIMAGE =
     file.raw.type === "image/jpeg" || file.raw.type === "image/png";
@@ -90,6 +94,8 @@ const checkPicture = (file) => {
   pictureButter.value.picName = pictureButter.value.file.name;
   showPicture.value = true;
 };
+
+//发送消息到后端
 const sendWebSocketMsg = (type) => {
   let message = {
     ...msgForm,
@@ -113,13 +119,11 @@ const websocketOnMessage = (e) => {
       msgJson.username = friendInfo.value.friendName;
     }
     msgJson.msgFormat = JSON.parse(JSON.parse(msgJson.message)).msg;
-    msgList.value.push(msgJson);
-    console.log(msgJson);
+    if (msgJson.type === "P") {
+      msgJson.loading = true;
+    }
+    msgList.push(msgJson);
     nextTick(() => {
-      console.log(
-        recordContainer.value.scrollTop,
-        recordContainer.value.scrollHeight
-      );
       if (
         recordContainer.value.scrollTop + 988 >=
           recordContainer.value.scrollHeight ||
@@ -148,7 +152,10 @@ const websocketOnOpen = (e) => {
       }
       item.time = item.add_time;
       item.msgFormat = item.content;
-      msgList.value.push(item);
+      if (item.type === "P") {
+        item.loading = true;
+      }
+      msgList.push(item);
     }
     nextTick(() => {
       loadingRecord.value = false;
@@ -171,6 +178,15 @@ const previewClose = () => {
 const websocketOnError = (e) => {};
 const websocketClose = (e) => {
   console.log("断开连接", e);
+};
+const loadImg = (item) => {
+  msgList[msgList.indexOf(item)].loading = false;
+  recordContainer.value.scrollTop += imgRefs[item.id].$el.offsetHeight;
+};
+const setrefsFun = (el, item) => {
+  if(el&&item){
+    imgRefs[item] = el
+  }
 };
 </script>
 
@@ -204,9 +220,8 @@ const websocketClose = (e) => {
         class="toolList"
         mode="horizontal"
         @select="handleSelect"
-
       >
-        <el-menu-item index="2" class="toolListItem"
+        <el-menu-item index="2" class="toolListItem" @click="callThisUser"
           ><el-icon><Phone /></el-icon
         ></el-menu-item>
         <el-sub-menu index="1" class="toolListItem">
@@ -220,6 +235,9 @@ const websocketClose = (e) => {
       style="display: flex; height: 0; flex-grow: 1; padding: 0px"
     >
       <div class="private-body" ref="recordContainer">
+        <!-- <ul class="chatBtns">
+          <li><span style="position:absolute;"><el-icon><Download /></el-icon></span></li>
+        </ul> -->
         <transition-group name="bubbles" tag="p">
           <div
             v-for="item in msgList"
@@ -248,13 +266,16 @@ const websocketClose = (e) => {
                 class="bubbleContainer"
                 :style="item.me == 1 ? 'justify-content:right' : ''"
               >
-                <div class="bubbleText">
+                <div class="bubbleText" ref="allMsgDom">
                   <span v-if="item.type === 'T'">{{ item.msgFormat }}</span>
                   <el-image
                     alt=""
                     v-if="item.type === 'P'"
                     class="pic"
+                    v-loading="item.loading"
                     :src="item.msgFormat"
+                    :ref="(el) => setrefsFun(el, item.id)"
+                    @load="loadImg(item)"
                     lazy
                   >
                     <template #error>
@@ -346,7 +367,7 @@ const websocketClose = (e) => {
       .toolListItem {
         padding: 0px 10px;
         &:hover {
-          background:none
+          background: none;
         }
       }
       .is-active {
@@ -357,11 +378,17 @@ const websocketClose = (e) => {
   }
   .private-body {
     height: 100%;
+    position: relative;
     overflow-y: auto;
     border-bottom: $border2;
     padding: 0px;
     flex: 1;
     box-sizing: border-box;
+    .chatBtns {
+      position: fixed;
+      list-style: none;
+      bottom: 0;
+    }
     &::-webkit-scrollbar {
       /*滚动条整体样式*/
       width: 5px;
@@ -415,7 +442,8 @@ const websocketClose = (e) => {
             display: flex;
             .pic {
               max-width: 500px;
-              min-width: 100px;
+              min-width: 200px;
+              min-height: 100px;
               max-height: 3000px;
             }
           }

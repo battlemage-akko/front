@@ -1,29 +1,33 @@
 <script setup>
-import asideMenus from '@/components/frame/components/asideMenus.vue'
-import headerMenus from '@/components/frame/components/headerMenus.vue'
-import chat from '@/components/chat/index.vue'
-import { ref,onMounted } from 'vue'
-import { logout } from '@/api/auth'
+import asideMenus from "@/components/frame/components/asideMenus.vue";
+import headerMenus from "@/components/frame/components/headerMenus.vue";
+import chat from "@/components/chat/index.vue";
+import TRTC from "trtc-js-sdk";
+import { ref, onMounted } from "vue";
+import { logout } from "@/api/auth";
 import { ElMessage } from "element-plus";
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router'
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 const store = useStore();
 const router = useRouter();
-
+const client = TRTC.createClient({
+  mode: 'rtc',
+  sdkAppId: 1400647317,
+  userId: store.state.userInfo.id,
+  userSig: store.state.TRTCInfo.userSig,
+})
 const LogoutThisUser = () => {
-  logout({
-    
-  }).then(res => {
-    store.commit('setBlock')
+  logout({}).then((res) => {
+    store.commit("setBlock");
     ElMessage({
-        message: '登出成功',
-        type: 'success',
-      })
-    router.go({
-        path: "Login"
+      message: "登出成功",
+      type: "success",
     });
-  })
-}
+    router.go({
+      path: "Login",
+    });
+  });
+};
 </script>
 
 <template>
@@ -33,12 +37,15 @@ const LogoutThisUser = () => {
         <headerMenus @fatherMethod="LogoutThisUser"></headerMenus>
       </el-header>
       <el-container>
-        <el-aside class="frame-aside" :width="this.$store.state.isCollage?'64px':'200px'">
+        <el-aside
+          class="frame-aside"
+          :width="this.$store.state.isCollage ? '64px' : '200px'"
+        >
           <asideMenus></asideMenus>
         </el-aside>
         <el-container>
           <el-main class="frame-main">
-            <router-view/>
+            <router-view />
           </el-main>
         </el-container>
       </el-container>
@@ -56,11 +63,11 @@ const LogoutThisUser = () => {
       position: relative;
     }
     .frame-aside {
-      background-color:grey;
+      background-color: grey;
       position: relative;
       user-select: none;
       height: 100%;
-      overflow:hidden;
+      overflow: hidden;
     }
     .frame-main {
       position: relative;

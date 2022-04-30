@@ -9,6 +9,7 @@ const store = createStore({
     isCollage: true,
     userInfo: JSON.parse(localStorage.getItem("userInfo")) || {},
     channels:null,
+    TRTCInfo: JSON.parse(localStorage.getItem("TRTCInfo")) || {},
     friend: {
       id:null,
     }
@@ -19,11 +20,9 @@ const store = createStore({
   mutations: {
     saveChannel(state,channel){
       state.channels = channel
-      console.log('连接到'+state.channels)
     },
     saveFriend(state,friendId){
       state.friend.id = friendId
-      console.log('friend.id'+state.friend.id)
     },
     clearChannel(state,channel){
       state.channel = null
@@ -55,10 +54,13 @@ const store = createStore({
       }
       return state.token
     },
+    setTRTCInfo(state,userSig){
+      localStorage.setItem('TRTCInfo',JSON.stringify(userSig))
+    },
     setBlock(state) {
       state.token = ""
-      localStorage.clear()
       state.userInfo = {}
+      state.TRTCUserSig = ''
       localStorage.clear()
     }
   },

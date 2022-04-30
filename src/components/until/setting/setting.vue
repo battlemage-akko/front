@@ -29,7 +29,7 @@ const closeSetting = () => {};
           <settingMenu />
         </el-aside>
         <el-main class="settingMain">
-          <router-view/>
+          
         </el-main>
       </el-container>
       <!-- <template #footer>
