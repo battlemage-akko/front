@@ -28,13 +28,17 @@ const LogoutThisUser = () => {
     });
   });
 };
+const closePhoneConn = () => {
+  store.commit('clearPhoneInfo')
+}
+
 </script>
 
 <template>
   <div class="main-container">
     <el-container class="frame">
       <el-header class="frame-header">
-        <headerMenus @fatherMethod="LogoutThisUser"></headerMenus>
+        <headerMenus @fatherMethod="LogoutThisUser" @closePhoneConn="closePhoneConn"></headerMenus>
       </el-header>
       <el-container>
         <el-aside

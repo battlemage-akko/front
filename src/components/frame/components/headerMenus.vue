@@ -1,22 +1,28 @@
 <script setup>
 import { ref, defineEmits, watch, reactive } from "vue";
-import avatarCropper from '@/components/until/avatarCropper.vue';
+import avatarCropper from "@/components/until/avatarCropper.vue";
 import { Search } from "@element-plus/icons-vue";
-import { VueCropper } from 'vue-cropper'
+import { VueCropper } from "vue-cropper";
 const emit = defineEmits(["update", "delete"]);
 const logout = () => {
   emit("fatherMethod");
 };
+const closePhoneConn = () => {
+  emit("closePhoneConn");
+}
 const upload = ref();
 const avatarChange = ref(false);
 const closeAvatarDialog = (data) => {
-  avatarChange.value = false
-}
+  avatarChange.value = false;
+};
 </script>
 
 <template>
   <div id="header">
-    <avatarCropper :avatarChange="avatarChange" @closeAvatarDialog="closeAvatarDialog"></avatarCropper>
+    <avatarCropper
+      :avatarChange="avatarChange"
+      @closeAvatarDialog="closeAvatarDialog"
+    ></avatarCropper>
     <div class="logo">
       <img src="https://cdn.lili-secretbase.com/pic/logo.png" alt="" />
     </div>
@@ -28,6 +34,21 @@ const closeAvatarDialog = (data) => {
       />
     </div>
     <div class="profile">
+      <el-tooltip
+        class="box-item"
+        effect="dark"
+        v-if="this.$store.state.phoneInfo.room_id !== null"
+        :content="this.$store.state.phoneInfo.type == 'private' ? '当前正在与'+this.$store.state.phoneInfo.friendInfo.friendName+'通话':'当前正在群'+'通话'"
+        placement="bottom-end"
+      >
+        <span
+          class="phoneStatus is-active"
+          @click="closePhoneConn"
+        >
+          <el-icon><Phone /></el-icon>
+        </span>
+      </el-tooltip>
+
       <el-popover
         :width="300"
         popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
@@ -60,7 +81,7 @@ const closeAvatarDialog = (data) => {
                 </div>
               </el-menu-item>
               <el-menu-item index="4">
-                <div @click="avatarChange = true">
+                <div>
                   <el-icon><Message /></el-icon>
                   <span>信息</span>
                 </div>
@@ -106,6 +127,20 @@ const closeAvatarDialog = (data) => {
     cursor: pointer;
     .el-avatar {
       border: 3px solid rgba(0, 0, 0, 0);
+    }
+    .phoneStatus {
+      font-size: 22px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      &.is-active {
+        color: white;
+        background-color: rgb(0, 204, 153);
+        border-radius: 22px;
+      }
     }
   }
 }

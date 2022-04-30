@@ -15,6 +15,8 @@ import Vuex from 'vuex'
 import Cookies from 'js-cookie'
 
 const app = createApp(App)
+// app.config.globalProperties.chat = chat;
+
 
 for (const iconName in ElIconModules) {
     if (Reflect.has(ElIconModules, iconName)) {
@@ -60,3 +62,4 @@ app.use(ElementPlus)
         error: '/error.png'
       })
     .mount('#app')
+

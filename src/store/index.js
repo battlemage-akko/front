@@ -12,12 +12,31 @@ const store = createStore({
     TRTCInfo: JSON.parse(localStorage.getItem("TRTCInfo")) || {},
     friend: {
       id:null,
+    },
+    phoneInfo: {
+      room_id:null,
+      type:null,
+      friendInfo:{},
+      groupInfo:{},
     }
   },
   getters: {
 
   },
   mutations: {
+    savePhoneInfo(state,info) {
+      state.phoneInfo.room_id = info['room_id']
+      state.phoneInfo.type = info['type']
+      if(info['type']==='private'){
+        state.phoneInfo.friendInfo = JSON.parse(JSON.stringify(info['friendInfo']))._value //深拷贝一次
+      }
+    },
+    clearPhoneInfo(state){
+      state.phoneInfo.room_id = null
+      state.phoneInfo.type = null
+      state.phoneInfo.friendInfo = {}
+      state.phoneInfo.groupInfo = {}
+    },
     saveChannel(state,channel){
       state.channels = channel
     },

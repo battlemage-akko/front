@@ -1,14 +1,18 @@
 <script setup>
 import firendsList from "@/components/chat/components/private/components/list.vue";
 import { getAllFriends } from "@/api/auth";
-import { onMounted, ref, computed, watch, reactive, onBeforeMount} from "vue";
+import { onMounted, ref, computed, watch, reactive, onBeforeMount,defineEmits} from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
+const emit = defineEmits(["update", "delete"]);
 const store = useStore();
 const router = useRouter();
 onMounted(() => {
   getAllMyFriends();
 });
+const closePhoneConn = () => {
+  emit("closePhoneConn");
+}
 const state = reactive({
   friendId: computed(() => {
     return store.state.friend.id;

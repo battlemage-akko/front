@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive, watch, nextTick } from "vue";
+import { onMounted, ref, reactive, watch, nextTick,defineEmits,onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   getThisFriendInfo,
@@ -7,7 +7,7 @@ import {
   uploadPicture,
 } from "@/api/auth";
 import { timestampToTime } from "@/utils/formatTime.js";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElNotification } from "element-plus";
 import { useStore } from "vuex";
 import { Check } from "@element-plus/icons-vue";
 const store = useStore();
@@ -19,7 +19,8 @@ const loadingRecord = ref(true);
 const recordContainer = ref(null);
 const showPicture = ref(false);
 const picture = ref(null);
-let imgRefs = reactive({})
+let imgRefs = reactive({});
+const emit = defineEmits(["update", "delete"]);
 const pictureButter = ref({
   content: "",
   file: "",
@@ -33,11 +34,14 @@ onMounted(() => {
   getThisFriendInfo({
     id: friendId,
   }).then((res) => {
+    res.result.friendId = friendId;
     friendInfo.value = res.result;
   });
   initWebSocket();
 });
-
+onUnmounted(()=>{ 
+  websock.close();
+})
 let websock = "";
 let room_id =
   parseInt(friendId) > parseInt(store.state.userInfo.id)
@@ -57,7 +61,7 @@ const sendPicture = () => {
     picName: pictureButter.value.picName,
   }).then((res) => {
     msgForm.msg = res.picture;
-    sendWebSocketMsg("P");
+    sendWebSocketMsg("P",room_id);
     previewClose();
     recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
   });
@@ -94,9 +98,7 @@ const checkPicture = (file) => {
   pictureButter.value.picName = pictureButter.value.file.name;
   showPicture.value = true;
 };
-
-//发送消息到后端
-const sendWebSocketMsg = (type) => {
+const sendWebSocketMsg = (type,room_id) => {
   let message = {
     ...msgForm,
     user_id: store.state.userInfo.id,
@@ -107,7 +109,6 @@ const sendWebSocketMsg = (type) => {
   websock.send(JSON.stringify(message));
   msgForm.msg = "";
 };
-
 const websocketOnMessage = (e) => {
   let msgJson = JSON.parse(e.data);
   if (msgJson.status == 200) {
@@ -124,7 +125,8 @@ const websocketOnMessage = (e) => {
     }
     msgList.push(msgJson);
     nextTick(() => {
-      if (
+      if(recordContainer.value.scrollTop!==null){
+        if (
         recordContainer.value.scrollTop + 988 >=
           recordContainer.value.scrollHeight ||
         (msgJson.type == "p" &&
@@ -132,6 +134,7 @@ const websocketOnMessage = (e) => {
             recordContainer.value.scrollHeight)
       ) {
         recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
+      }
       }
     });
   }
@@ -163,11 +166,6 @@ const websocketOnOpen = (e) => {
     });
   });
 };
-const toBottom = (pass) => {
-  if (pass == 1) {
-    recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
-  }
-};
 const previewClose = () => {
   pictureButter.value.content = "";
   pictureButter.value.file = "";
@@ -184,8 +182,35 @@ const loadImg = (item) => {
   recordContainer.value.scrollTop += imgRefs[item.id].$el.offsetHeight;
 };
 const setrefsFun = (el, item) => {
-  if(el&&item){
-    imgRefs[item] = el
+  if (el && item) {
+    imgRefs[item] = el;
+  }
+};
+const closePhoneConn = () => {
+  msgForm.msg = "离开语音";
+  sendWebSocketMsg("R",store.state.phoneInfo.room_id);
+  store.commit('clearPhoneInfo');
+}
+const call = () => {
+  if (store.state.phoneInfo.room_id === null) {
+    msgForm.msg = "进入语音";
+    sendWebSocketMsg("R",room_id);
+    store.commit("savePhoneInfo", {
+      room_id: room_id,
+      type: "private",
+      friendInfo: friendInfo,
+    });
+  }
+  else if(store.state.phoneInfo.friendInfo.friendId === friendId) {
+    closePhoneConn()
+  } 
+  else {
+    ElNotification({
+      title: "警告",
+      message: "请点击顶部头像隔壁的电话按钮关闭与其他人的语音再进行连接",
+      type: "warning",
+      offset: 120,
+    });
   }
 };
 </script>
@@ -221,8 +246,8 @@ const setrefsFun = (el, item) => {
         mode="horizontal"
         @select="handleSelect"
       >
-        <el-menu-item index="2" class="toolListItem" @click="callThisUser"
-          ><el-icon><Phone /></el-icon
+        <el-menu-item index="2" class="toolListItem" @click="call"
+          ><el-icon><Phone-filled /></el-icon
         ></el-menu-item>
         <el-sub-menu index="1" class="toolListItem">
           <template #title>新建工作区</template>
@@ -245,9 +270,12 @@ const setrefsFun = (el, item) => {
             class="bubble"
             :style="item.me == 1 ? 'justify-content:right' : ''"
           >
+            <h1 v-if="item.type === 'R'" class="systemMsg">
+              {{ item.username }} {{ item.msgFormat }}
+            </h1>
             <img
               class="bubbleAvatar"
-              v-if="item.me != 1"
+              v-if="item.me != 1 && item.type !== 'R'"
               :src="
                 item.me == 1
                   ? this.$store.state.userInfo.avatar
@@ -255,7 +283,7 @@ const setrefsFun = (el, item) => {
               "
               alt=""
             />
-            <div class="saySomething">
+            <div class="saySomething" v-if="item.type !== 'R'">
               <div
                 class="nameAndTime"
                 :style="item.me == 1 ? 'justify-content:right' : ''"
@@ -266,7 +294,7 @@ const setrefsFun = (el, item) => {
                 class="bubbleContainer"
                 :style="item.me == 1 ? 'justify-content:right' : ''"
               >
-                <div class="bubbleText" ref="allMsgDom">
+                <div class="bubbleText">
                   <span v-if="item.type === 'T'">{{ item.msgFormat }}</span>
                   <el-image
                     alt=""
@@ -288,7 +316,7 @@ const setrefsFun = (el, item) => {
             </div>
             <img
               class="bubbleAvatar"
-              v-if="item.me == 1"
+              v-if="item.me == 1 && item.type !== 'R'"
               :src="
                 item.me == 1
                   ? this.$store.state.userInfo.avatar
@@ -320,7 +348,7 @@ const setrefsFun = (el, item) => {
                 type="primary"
                 native-type="submit"
                 :icon="Check"
-                @click="sendWebSocketMsg('T')"
+                @click="sendWebSocketMsg('T',room_id)"
                 :disabled="loadingRecord"
               />
             </template>
@@ -373,6 +401,7 @@ const setrefsFun = (el, item) => {
       .is-active {
         border: none;
         background: none;
+        color: none;
       }
     }
   }
@@ -422,6 +451,14 @@ const setrefsFun = (el, item) => {
         box-shadow: $shadow3;
         border-radius: 5px;
       }
+      .systemMsg {
+        margin: 0px;
+        display: flex;
+        justify-content: center;
+        font-size: 12px;
+        width: 100%;
+        opacity: 0.5;
+      }
       display: flex;
       padding: 10px;
       margin: 10px;
@@ -429,6 +466,7 @@ const setrefsFun = (el, item) => {
         display: flex;
         flex-direction: column;
         margin: 0px 20px;
+
         .bubbleContainer {
           display: flex;
           margin-top: 3px;

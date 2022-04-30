@@ -25,7 +25,6 @@ const addThisUser = (e,user_id, friend_id) => {
       if(i.id === res.friendId){
         i.loading = false
         i.friend = res.status
-        
       }
     }
   });
