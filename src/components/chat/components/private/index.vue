@@ -13,6 +13,9 @@ onMounted(() => {
 const closePhoneConn = () => {
   emit("closePhoneConn");
 }
+const call = () => {
+  emit("call")
+}
 const state = reactive({
   friendId: computed(() => {
     return store.state.friend.id;
@@ -55,7 +58,7 @@ const getAllMyFriends = () => {
         <firendsList :AllMyFriends="AllMyFriends" v-loading="LoadingList" :getAllMyFriends="getAllMyFriends"/>
       </el-aside>
       <el-main class="main-container">
-        <router-view :key="id" v-if="!LoadingList"></router-view>
+        <router-view :key="id" v-if="!LoadingList" @call="call"></router-view>
       </el-main>
     </el-container>
   </div>

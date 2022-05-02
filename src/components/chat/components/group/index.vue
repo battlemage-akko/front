@@ -5,7 +5,7 @@ import { useStore } from "vuex";
 const store = useStore();
 const router = useRouter();
 onBeforeMount(() => {
-  store.commit('saveFriend',null)
+  store.commit('saveFriend',{id:null,name:null})
 })
 </script>
 <template>

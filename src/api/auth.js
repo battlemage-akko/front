@@ -103,3 +103,11 @@ export const getPrivateChatRecord  = (data) => {
         data,
     })
 }
+
+export const checkUserStatu  = (data) => {
+    return axios({
+        url: 'api/checkUserStatu/',
+        method: 'POST',
+        data,
+    })
+}

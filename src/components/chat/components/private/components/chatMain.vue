@@ -30,6 +30,9 @@ const msgForm = reactive({
   msg: "",
   type: "",
 });
+const call = () => {
+  emit("call")
+}
 onMounted(() => {
   getThisFriendInfo({
     id: friendId,
@@ -144,7 +147,7 @@ const websocketOnOpen = (e) => {
     room_id: room_id,
   }).then((res) => {
     store.commit("saveChannel", room_id);
-    store.commit("saveFriend", friendId);
+    store.commit("saveFriend", {id:friendId,name:friendInfo.value.friendName});
     for (let item of res.record) {
       if (item.user_id == store.state.userInfo.id) {
         item.me = 1;
@@ -160,6 +163,7 @@ const websocketOnOpen = (e) => {
       }
       msgList.push(item);
     }
+
     nextTick(() => {
       loadingRecord.value = false;
       recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
@@ -173,9 +177,10 @@ const previewClose = () => {
   picture.value.clearFiles();
   showPicture.value = false;
 };
-const websocketOnError = (e) => {};
+const websocketOnError = (e) => {
+};
 const websocketClose = (e) => {
-  console.log("断开连接", e);
+  // console.log("断开连接", e);
 };
 const loadImg = (item) => {
   msgList[msgList.indexOf(item)].loading = false;
@@ -186,33 +191,33 @@ const setrefsFun = (el, item) => {
     imgRefs[item] = el;
   }
 };
-const closePhoneConn = () => {
-  msgForm.msg = "离开语音";
-  sendWebSocketMsg("R",store.state.phoneInfo.room_id);
-  store.commit('clearPhoneInfo');
-}
-const call = () => {
-  if (store.state.phoneInfo.room_id === null) {
-    msgForm.msg = "进入语音";
-    sendWebSocketMsg("R",room_id);
-    store.commit("savePhoneInfo", {
-      room_id: room_id,
-      type: "private",
-      friendInfo: friendInfo,
-    });
-  }
-  else if(store.state.phoneInfo.friendInfo.friendId === friendId) {
-    closePhoneConn()
-  } 
-  else {
-    ElNotification({
-      title: "警告",
-      message: "请点击顶部头像隔壁的电话按钮关闭与其他人的语音再进行连接",
-      type: "warning",
-      offset: 120,
-    });
-  }
-};
+// const closePhoneConn = () => {
+//   msgForm.msg = "离开语音";
+//   sendWebSocketMsg("R",store.state.phoneInfo.room_id);
+//   store.commit('clearPhoneInfo');
+// }
+// const call = () => {
+//   if (store.state.phoneInfo.room_id === null) {
+//     msgForm.msg = "进入语音";
+//     sendWebSocketMsg("R",room_id);
+//     store.commit("savePhoneInfo", {
+//       room_id: room_id,
+//       type: "private",
+//       friendInfo: friendInfo,
+//     });
+//   }
+//   else if(store.state.phoneInfo.friendInfo.friendId === friendId) {
+//     closePhoneConn()
+//   } 
+//   else {
+//     ElNotification({
+//       title: "警告",
+//       message: "请点击顶部头像隔壁的电话按钮关闭与其他人的语音再进行连接",
+//       type: "warning",
+//       offset: 120,
+//     });
+//   }
+// };
 </script>
 
 <template>
