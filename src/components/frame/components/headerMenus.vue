@@ -1,15 +1,22 @@
 <script setup>
-import { ref, defineEmits, watch, reactive } from "vue";
+import { ref, defineEmits, watch, computed, reactive } from "vue";
 import avatarCropper from "@/components/until/avatarCropper.vue";
+import { useStore } from "vuex";
 import { Search } from "@element-plus/icons-vue";
 import { VueCropper } from "vue-cropper";
 const emit = defineEmits(["update", "delete"]);
+const store = useStore();
 const logout = () => {
   emit("fatherMethod");
 };
-const closePhoneConn = () => {
-  emit("closePhoneConn");
-}
+const closePhoneConn = (type) => {
+  emit("closePhoneConn",type);
+};
+const phoneStatus = reactive({
+  status: computed(() => {
+    return store.state.phoneLoading;
+  }),
+});
 const upload = ref();
 const avatarChange = ref(false);
 const closeAvatarDialog = (data) => {
@@ -34,17 +41,23 @@ const closeAvatarDialog = (data) => {
       />
     </div>
     <div class="profile">
+      <h1 class="phoneConnecting" v-show="phoneStatus.status === true">
+        <span style="padding: 0px 20px"> 语音连接中... </span>
+      </h1>
       <el-tooltip
         class="box-item"
         effect="dark"
         v-if="this.$store.state.phoneInfo.room_id !== null"
-        :content="this.$store.state.phoneInfo.type == 'private' ? '当前正在与'+this.$store.state.phoneInfo.friendInfo.friendName+'通话':'当前正在群'+'通话'"
+        :content="
+          this.$store.state.phoneInfo.type == 'private'
+            ? '当前正在与' +
+              this.$store.state.phoneInfo.friendInfo.friendName +
+              '通话'
+            : '当前正在群' + '通话'
+        "
         placement="bottom-end"
       >
-        <span
-          class="phoneStatus is-active"
-          @click="closePhoneConn"
-        >
+        <span class="phoneStatus is-active" @click="closePhoneConn(1)">
           <el-icon><Phone /></el-icon>
         </span>
       </el-tooltip>
@@ -93,7 +106,6 @@ const closeAvatarDialog = (data) => {
           </div>
         </template>
       </el-popover>
-      
     </div>
   </div>
 </template>
@@ -127,6 +139,9 @@ const closeAvatarDialog = (data) => {
     cursor: pointer;
     .el-avatar {
       border: 3px solid rgba(0, 0, 0, 0);
+    }
+    .phoneConnecting {
+      font-size: 18px;
     }
     .phoneStatus {
       font-size: 22px;

@@ -19,12 +19,16 @@ const store = createStore({
       type:null,
       friendInfo:{},
       groupInfo:{},
-    }
+    },
+    phoneLoading:false,
   },
   getters: {
 
   },
   mutations: {
+    changePhoneStatus(state,status){
+      state.phoneLoading = status
+    },
     savePhoneInfo(state,info) {
       state.phoneInfo.room_id = info['room_id']
       state.phoneInfo.type = info['type']

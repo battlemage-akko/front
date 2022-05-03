@@ -37,10 +37,6 @@ const id = computed(() => {
 const AllMyFriends = reactive({});
 const LoadingList = ref(true);
 
-const gettest = () => {
-  console.log('test')
-}
-
 const getAllMyFriends = () => {
   getAllFriends().then((res) => {
     for(let i of res.result){
