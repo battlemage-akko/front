@@ -3,7 +3,7 @@ import asideMenus from "@/components/frame/components/asideMenus.vue";
 import headerMenus from "@/components/frame/components/headerMenus.vue";
 import chat from "@/components/chat/index.vue";
 import TRTC from "trtc-js-sdk";
-import { ref, onMounted, onUnmounted,reactive} from "vue";
+import { ref, onMounted, onBeforeUnmount,reactive,onBeforeUpdate} from "vue";
 import { logout, checkUserStatu } from "@/api/auth";
 import { ElMessage, ElNotification } from "element-plus";
 import { useStore } from "vuex";
@@ -19,10 +19,11 @@ const callingRequestInfo = reactive({
 })
 onMounted(() => {
   initSystemSocket();
+  window.addEventListener('beforeunload', e => closePhoneConn(1))
 });
-onUnmounted(() => {
-  systemsockOnClose();
-});
+// onBeforeUnmount(() => {
+//   systemsockOnClose();
+// });
 const client = TRTC.createClient({
   mode: "rtc",
   sdkAppId: 1400647317,
@@ -69,7 +70,6 @@ const initSystemSocket = () => {
 };
 const systemsockOnMessage = (e) => {
   const message = JSON.parse(e.data)
-  console.log(message)
   switch(message.typeCode) {
     case 100: /*接收到连接语音请求*/
       store.commit("changePhoneStatus", true);
@@ -118,6 +118,8 @@ const systemsockOnOpen = (e) => {
   console.log("systemsock open");
 };
 const systemsockOnClose = (e) => {
+  closePhoneConn(1)
+  // systemsockSend(null, callingRequestInfo.friend_id, "closeCalling",callingRequestInfo.channel);
   console.log("systemsock close");
 };
 const systemsockSend = (msg, id, type, channel=null) => {
@@ -206,12 +208,12 @@ const connectPhone = () => {
 };
 // type为1则为主动，type为0则为被动
 const closePhoneConn = (type) => {
-  console.log(type)
   if(type){
     systemsockSend(null, callingRequestInfo.friend_id, "closeCalling",callingRequestInfo.channel);
   }
   store.commit("clearPhoneInfo");
   initCallingRequestInfo()
+  return 1
 }
 </script>
 <template>

@@ -44,6 +44,7 @@ const store = createStore({
     },
     saveChannel(state,channel){
       state.channels = channel
+      console.log(state.channels)
     },
     saveFriend(state,friendInfo){
       state.friend.id = friendInfo.id

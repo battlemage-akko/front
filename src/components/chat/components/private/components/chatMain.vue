@@ -33,6 +33,11 @@ const msgForm = reactive({
 const call = () => {
   emit("call")
 }
+let websock = "";
+let room_id =
+  parseInt(friendId) > parseInt(store.state.userInfo.id)
+    ? store.state.userInfo.id.toString() +'_'+ friendId.toString()
+    : friendId.toString() +'_'+ store.state.userInfo.id.toString();
 onMounted(() => {
   getThisFriendInfo({
     id: friendId,
@@ -45,11 +50,6 @@ onMounted(() => {
 onUnmounted(()=>{ 
   websock.close();
 })
-let websock = "";
-let room_id =
-  parseInt(friendId) > parseInt(store.state.userInfo.id)
-    ? store.state.userInfo.id + friendId
-    : friendId + store.state.userInfo.id;
 
 const initWebSocket = () => {
   websock = new WebSocket("ws://127.0.0.1:8000/connectChannel/" + room_id);
