@@ -381,6 +381,10 @@ const setrefsFun = (el, item) => {
 </template>
 
 <style lang="scss" scope>
+@mixin display-center {
+  display: flex;
+  justify-content: center;
+}
 .previewPicture {
   width: 100%;
 }
@@ -457,9 +461,8 @@ const setrefsFun = (el, item) => {
         border-radius: 5px;
       }
       .systemMsg {
+        @include display-center;
         margin: 0px;
-        display: flex;
-        justify-content: center;
         font-size: 12px;
         width: 100%;
         opacity: 0.5;

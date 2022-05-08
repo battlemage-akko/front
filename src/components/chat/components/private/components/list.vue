@@ -57,7 +57,6 @@ const connect = (id) => {
         @open="handleOpen"
         @close="handleClose"
         router
-        :defaultOpeneds="this.$route.params.id?'1':''"
       >
         <el-sub-menu :show-timeout="0" :hide-timeout="0" class="friendList" index="1">
           <template #title>
@@ -89,6 +88,7 @@ const connect = (id) => {
 </template>
 
 <style lang="scss" scoped>
+$friendCardbg:#eeeeee;
 #friendsList {
   .addFriend {
     font-size: 18px;
@@ -118,6 +118,9 @@ const connect = (id) => {
           padding: 0px 10px !important;
           border-radius: 100px;
           margin: 10px;
+          &:hover{
+            background-color:$friendCardbg;
+          }
           .eachFriend {
             display: flex;
             align-items: center;
@@ -135,11 +138,17 @@ const connect = (id) => {
               margin-left: 10px;
               font-size: 17px;
               font-weight: 500;
+              color: rgb(121, 121, 121);
             }
           }
         }
         .is-active{
           background-image: linear-gradient(to left, rgba(255,0,0,0), #dddddd);
+          .eachFriend {
+            .friendName{
+              color: black;
+            }
+          }
         }
       }
 

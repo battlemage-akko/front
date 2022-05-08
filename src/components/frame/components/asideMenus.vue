@@ -29,7 +29,7 @@ const closeSetting = () => {
         <span class="inviteSomebody">添加群组</span>
       </template>
     </el-menu-item>
-    <el-menu-item :route="{ name: 'Main' }" class="menu-items" index="1">
+    <el-menu-item :route="{ name: 'default' }" class="menu-items" index="1">
       <img src="@/assets/profile.png" alt="" />
       <template #title>
         <span class="groupName">

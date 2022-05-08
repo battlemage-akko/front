@@ -36,7 +36,7 @@ const router = createRouter({
       path: '/home',
       component: Home,
       name: 'home',
-      redirect: '/home/Main',
+      redirect: '/home/Main/default',
       meta: {
         requireAuth: true,
       },
@@ -53,6 +53,13 @@ const router = createRouter({
             component: () => import('@/components/chat/components/private/components/chatMain.vue'),
             meta: {
               title: '私聊',
+            },
+          },{
+            path: 'default',
+            name: 'default',
+            component: () => import('@/components/chat/components/private/components/default.vue'),
+            meta: {
+              title: '首页',
             },
           }]
         },

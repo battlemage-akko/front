@@ -6,6 +6,7 @@ import TRTC from "trtc-js-sdk";
 import { ref, onMounted, onBeforeUnmount,reactive,onBeforeUpdate} from "vue";
 import { logout, checkUserStatu } from "@/api/auth";
 import { ElMessage, ElNotification } from "element-plus";
+import _ from 'lodash';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 const store = useStore();
@@ -148,7 +149,7 @@ const changeCallingRequestInfo = (Info) => {
   callingRequestInfo.channel = Info.channel
   callingRequestInfo.friend_name = Info.friend_name
 }
-const call = () => {
+const call = _.throttle(function(){
   if (
     store.state.phoneInfo.room_id === null &&
     store.state.phoneLoading !== true
@@ -194,7 +195,10 @@ const call = () => {
       offset: 130,
     });
   }
-};
+}, 1000, {
+  leading: true,
+  trailing: false
+});
 const connectPhone = () => {
   store.commit("savePhoneInfo", {
     room_id: callingRequestInfo.channel,
