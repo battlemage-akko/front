@@ -11,7 +11,7 @@
           @select="handleSelect"
         >
           <el-menu-item index="1">
-              <span>Processing Center</span>
+              <span>最近联系</span>
           </el-menu-item>
         </el-menu>
       </el-header>

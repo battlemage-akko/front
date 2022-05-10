@@ -66,8 +66,7 @@ const searchUserF = () => {
     </el-form-item>
   </el-form>
   <div class="searchResult" v-loading="loading">
-    <div v-for="item in searchResult.value" :key="item.id">
-      <div class="card" v-loading="item.loading">
+      <div class="card" v-loading="item.loading" v-for="item in searchResult.value" :key="item.id">
         <img :src="item.avatar" alt="" />
         <span>{{ item.username }}</span>
         <el-button
@@ -81,7 +80,6 @@ const searchUserF = () => {
       </div>
     </div>
     <div class="noSearchResult" v-show="nothing">没有找到任何结果！</div>
-  </div>
 </template>
 
 <style lang="scss" scope>
@@ -96,8 +94,11 @@ const searchUserF = () => {
 .searchResult {
   min-height: 100px;
   display: flex;
+  flex-wrap: wrap;
   .card {
-    width: 100px;
+    flex: 1;
+    max-width: 120px;
+    min-width: 90px;
     height: 130px;
     border-radius: 10px;
     box-shadow: $shadow2;

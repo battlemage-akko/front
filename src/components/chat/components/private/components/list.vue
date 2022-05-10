@@ -99,11 +99,12 @@ $friendCardbg:#eeeeee;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 
-    .el-dialog {
+    &::v-deep .el-dialog {
       border-radius: 5px;
       box-shadow: $shadow;
-      min-width: 400px;
+      min-width: 250px!important;
     }
   }
   .searchFriend {

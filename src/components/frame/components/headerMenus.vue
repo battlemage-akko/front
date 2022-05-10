@@ -62,6 +62,18 @@ const closeAvatarDialog = (data) => {
         </span>
       </el-tooltip>
       <el-popover
+        placement="bottom"
+        :width="200"
+        trigger="hover"
+        content="this is content, this is content, this is content"
+      >
+        <template #reference>
+          <el-icon class="myMessage">
+            <Message />
+          </el-icon>
+        </template>
+      </el-popover>
+      <el-popover
         :width="300"
         popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
       >
@@ -90,12 +102,6 @@ const closeAvatarDialog = (data) => {
                 <div @click="avatarChange = true">
                   <el-icon><Picture /></el-icon>
                   <span>更换头像</span>
-                </div>
-              </el-menu-item>
-              <el-menu-item index="4">
-                <div>
-                  <el-icon><Message /></el-icon>
-                  <span>信息</span>
                 </div>
               </el-menu-item>
               <el-menu-item index="100">
@@ -139,6 +145,23 @@ const closeAvatarDialog = (data) => {
     cursor: pointer;
     .el-avatar {
       border: 3px solid rgba(0, 0, 0, 0);
+    }
+    .myMessage {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      margin: 0px 10px;
+      position: relative;
+      &::after {
+        content:"";
+        position: absolute;
+        right: 7px;
+        top: 8px;
+        width: 8px;
+        height: 8px;
+        background-color:red;
+        border-radius:10px;
+      }
     }
     .phoneConnecting {
       font-size: 18px;
