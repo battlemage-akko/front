@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive, watch, nextTick,defineEmits,onUnmounted } from "vue";
+import { onMounted, ref, reactive, watch, nextTick,defineEmits,onUnmounted, inject } from "vue";
 import { useRouter } from "vue-router";
 import {
   getThisFriendInfo,
@@ -53,7 +53,7 @@ onUnmounted(()=>{
 })
 
 const initWebSocket = () => {
-  websock = new WebSocket("ws://127.0.0.1:8000/connectChannel/" + room_id);
+  websock = new WebSocket(inject('$chatSocket')+ room_id);
   websock.onmessage = websocketOnMessage;
   websock.onopen = websocketOnOpen;
   websock.onerror = websocketOnError;

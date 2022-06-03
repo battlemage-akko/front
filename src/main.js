@@ -52,6 +52,10 @@ router.beforeEach((to, from, next) => {
         next();
     }
 })
+
+app.provide('$systemSocket', "ws://127.0.0.1:8000/beholder/");
+app.provide('$chatSocket', "ws://127.0.0.1:8000/connectChannel/");
+
 app.use(ElementPlus)
     .use(router)
     .use(store)

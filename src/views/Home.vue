@@ -3,7 +3,7 @@ import asideMenus from "@/components/frame/components/asideMenus.vue";
 import headerMenus from "@/components/frame/components/headerMenus.vue";
 import chat from "@/components/chat/index.vue";
 import TRTC from "trtc-js-sdk";
-import { ref, onMounted, onBeforeUnmount, reactive, onBeforeUpdate,watch } from "vue";
+import { ref, onMounted, reactive,watch, inject } from "vue";
 import { logout, checkUserStatu,distributeRoomid } from "@/api/auth";
 import { ElMessage, ElNotification } from "element-plus";
 import _ from "lodash";
@@ -79,10 +79,10 @@ const acceptCallingResquest = () => {
 let systemsock = "";
 const initSystemSocket = () => {
   systemsock = new WebSocket(
-    "ws://127.0.0.1:8000/beholder/" + store.state.userInfo.id
+    inject('$systemSocket') + store.state.userInfo.id
   );
   systemsock.onopen = systemsockOnOpen;
-  systemsock.onclose = systemsockOnClose;
+  systemsock.onclose = systemsockOnClose; 
   systemsock.onmessage = systemsockOnMessage;
 };
 const systemsockOnMessage = (e) => {

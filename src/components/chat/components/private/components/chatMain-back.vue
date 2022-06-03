@@ -377,6 +377,7 @@ const call = () => {
 <style lang="scss" scope>
 .previewPicture {
   width: 100%;
+  max-height: 50%;
 }
 .privateChat-frame {
   height: 100%;
