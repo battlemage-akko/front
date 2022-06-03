@@ -65,7 +65,6 @@ const passwdChange = computed(() => {
 const validatePass = (rule, value, callback) => {
   //  密码只能由大小写英文字母或数字开头，且由大小写英文字母_.组成
   const reg = /^[A-Za-z0-9][A-Za-z0-9_.]{5,14}$/;
-  console.log("reg", value.match(reg));
   if (!value.match(reg)) {
     callback(
       new Error("密码由字母或数字开头，且只能为字母,数字,下划线及（.）")

@@ -61,6 +61,12 @@ const router = createRouter({
             meta: {
               title: '首页',
             },
+            redirect: '/home/Main/default/recommendation',
+            children:[{
+              path:'recommendation',
+              name:'推荐',
+              component: () => import('@/components/chat/components/private/components/recommendation.vue'),
+            }]
           }]
         },
         {

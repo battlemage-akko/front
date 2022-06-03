@@ -3,8 +3,8 @@ import asideMenus from "@/components/frame/components/asideMenus.vue";
 import headerMenus from "@/components/frame/components/headerMenus.vue";
 import chat from "@/components/chat/index.vue";
 import TRTC from "trtc-js-sdk";
-import { ref, onMounted, onBeforeUnmount, reactive, onBeforeUpdate } from "vue";
-import { logout, checkUserStatu } from "@/api/auth";
+import { ref, onMounted, onBeforeUnmount, reactive, onBeforeUpdate,watch } from "vue";
+import { logout, checkUserStatu,distributeRoomid } from "@/api/auth";
 import { ElMessage, ElNotification } from "element-plus";
 import _ from "lodash";
 import { useStore } from "vuex";
@@ -20,7 +20,20 @@ const callingRequestInfo = reactive({
   friend_name: null,
   localStream: null,
 });
-
+const audio = reactive({
+  volume: 0,
+  ratio:0.85,
+  stop:false
+})
+const Headset = reactive({
+  ratio:1,
+  stop:false
+})
+watch(audio, (newVal, oldVal) => {
+  TRTC.getSpeakers().then(res => {
+    
+  })
+},{deep:true});
 onMounted(() => {
   initSystemSocket();
   window.addEventListener("beforeunload", (e) => closePhoneConn(1));
@@ -47,7 +60,6 @@ const LogoutThisUser = () => {
     });
   });
 };
-
 const handleResquestClose = () => {
   receiveCallingRequest.value = false;
   systemsockSend("0", callingRequestInfo.friend_id, "callingRespond");
@@ -61,7 +73,7 @@ const acceptCallingResquest = () => {
     type: "success",
     offset: 130,
   });
-  connectPhone();
+  connectPhone(callingRequestInfo.TRTC_roomid);
   receiveCallingRequest.value = false;
 };
 let systemsock = "";
@@ -83,6 +95,7 @@ const systemsockOnMessage = (e) => {
         channel: message.channel,
         friend_id: message.origin.id,
         friend_name: message.origin.name,
+        TRTC_roomid: message.message
       });
       receiveCallingRequest.value = true;
       break;
@@ -103,7 +116,7 @@ const systemsockOnMessage = (e) => {
           type: "success",
           offset: 130,
         });
-        connectPhone();
+        connectPhone(callingRequestInfo.TRTC_roomid);
       }
       break;
     case 201 /*对方主动断开连接*/:
@@ -117,6 +130,7 @@ const systemsockOnMessage = (e) => {
       break;
   }
 };
+
 const systemsockOnOpen = (e) => {
   console.log("systemsock open");
 };
@@ -145,20 +159,21 @@ const initCallingRequestInfo = () => {
   callingRequestInfo.channel = null;
   callingRequestInfo.friend_name = null;
   callingRequestInfo.localStream = null;
+  callingRequestInfo.TRTC_roomid = null;
 };
 const changeCallingRequestInfo = (Info) => {
   callingRequestInfo.message = Info.message;
   callingRequestInfo.friend_id = Info.friend_id;
   callingRequestInfo.channel = Info.channel;
   callingRequestInfo.friend_name = Info.friend_name;
+  callingRequestInfo.TRTC_roomid = Info.TRTC_roomid;
 };
-const localStreamInit = async _ => {
-  await client.join({ roomId: 1 });
+const localStreamInit = async roomId => {
+  await client.join({ roomId: roomId });
   callingRequestInfo.localStream = TRTC.createStream({ userId:store.state.userInfo.id, audio: true,video: false});
   await callingRequestInfo.localStream.initialize();
   await callingRequestInfo.localStream.play('elementId').catch(error => {});
   await client.publish(callingRequestInfo.localStream);
-  
 }
 const call = _.throttle(
   function () {
@@ -172,13 +187,16 @@ const call = _.throttle(
           const channel = store.state.channels;
           const name = store.state.friend.name;
           store.commit("changePhoneStatus", true);
-          systemsockSend("请求语音", id, "callingRequest", channel);
-          changeCallingRequestInfo({
-            message: null,
-            friend_id: id,
-            channel: channel,
-            friend_name: name,
-          });
+          distributeRoomid({}).then(res =>{
+            systemsockSend(res.roomId, id, "callingRequest", channel);
+            changeCallingRequestInfo({
+              message: null,
+              friend_id: id,
+              channel: channel,
+              friend_name: name,
+              TRTC_roomid: res.roomId,
+            });
+          })
         } else {
           ElNotification({
             title: "注意",
@@ -214,13 +232,13 @@ const call = _.throttle(
     trailing: false,
   }
 );
-const connectPhone = () => {
+const connectPhone = (roomId) => {
   try {
     //推送本地流
-    localStreamInit()
+    localStreamInit(roomId)
     client.on('audio-volume', event => {
       event.result.forEach(({ userId, audioVolume, stream }) => {
-        console.log(`userId: ${userId}, audioVolume: ${audioVolume}`);
+        audio.volume = audioVolume
       })
     })
     client.enableAudioVolumeEvaluation(200);
@@ -252,6 +270,7 @@ const closePhoneConn = (type) => {
   }
   store.commit("clearPhoneInfo");
   initCallingRequestInfo();
+  audio.volume = 0
   return 1;
 };
 </script>
@@ -276,6 +295,8 @@ const closePhoneConn = (type) => {
         <headerMenus
           @fatherMethod="LogoutThisUser"
           @closePhoneConn="closePhoneConn"
+          :audio = "audio"
+          :Headset = "Headset"
         ></headerMenus>
       </el-header>
       <el-container>
@@ -287,7 +308,7 @@ const closePhoneConn = (type) => {
         </el-aside>
         <el-container>
           <el-main class="frame-main">
-            <router-view @call="call" />
+            <router-view @call="call"/>
           </el-main>
         </el-container>
       </el-container>

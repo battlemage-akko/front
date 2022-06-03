@@ -18,9 +18,6 @@ const loginThisUser = () => {
   loading = !loading
   login({'username':loginForm.username,'password':loginForm.password},{withCredentials:true}).then(res => {
     if (res.status === 1){
-      getUserSig({ id: res['userInfo']['id'] }).then((userSigResponse) => {
-        store.commit('setTRTCInfo',userSigResponse)
-      });
       store.commit('setUserInfo', res['userInfo']); 
       store.commit('setToken', res['token']); 
       // localStorage.clear()
@@ -29,8 +26,11 @@ const loginThisUser = () => {
         message: res.content,
         type: 'success',
       })
-      router.push({
+      getUserSig({ id: res['userInfo']['id'] }).then((userSigResponse) => {
+        store.commit('setTRTCInfo',userSigResponse)
+        router.push({
         path: "home"
+      });
       });
     }
     else if (res.status != 1){

@@ -111,3 +111,19 @@ export const checkUserStatu  = (data) => {
         data,
     })
 }
+
+export const distributeRoomid  = (data) => {
+    return axios({
+        url: 'api/distributeRoomid/',
+        method: 'POST',
+        data,
+    })
+}
+
+export const backMsg  = (data) => {
+    return axios({
+        url: 'api/backMsg/',
+        method: 'POST',
+        data,
+    })
+}

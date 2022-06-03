@@ -78,8 +78,8 @@ const searchUserF = () => {
           <span v-show="item.friend === 1">删好友</span>
         </el-button>
       </div>
-    </div>
     <div class="noSearchResult" v-show="nothing">没有找到任何结果！</div>
+  </div>
 </template>
 
 <style lang="scss" scope>

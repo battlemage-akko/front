@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineEmits, watch, computed, reactive } from "vue";
+import { ref, defineProps, defineEmits, watch, computed, reactive } from "vue";
 import avatarCropper from "@/components/until/avatarCropper.vue";
 import { useStore } from "vuex";
 import { Search } from "@element-plus/icons-vue";
@@ -12,11 +12,21 @@ const logout = () => {
 const closePhoneConn = (type) => {
   emit("closePhoneConn",type);
 };
+const props = defineProps({ 
+  audio: { type: Object },
+  Headset: { type: Object }  
+})
 const phoneStatus = reactive({
   status: computed(() => {
     return store.state.phoneLoading;
   }),
 });
+const mute = (object) => {
+  object.stop = !object.stop
+  if(object.stop){
+
+  }
+}
 const upload = ref();
 const avatarChange = ref(false);
 const closeAvatarDialog = (data) => {
@@ -33,13 +43,13 @@ const closeAvatarDialog = (data) => {
     <div class="logo">
       <img src="https://cdn.lili-secretbase.com/pic/logo.png" alt="" />
     </div>
-    <div class="searchInput">
+    <!-- <div class="searchInput">
       <el-input
         class="inputArea"
         placeholder="Type something"
         :prefix-icon="Search"
       />
-    </div>
+    </div> -->
     <div class="profile">
       <h1 class="phoneConnecting" v-show="phoneStatus.status === true">
         <span style="padding: 0px 20px"> 语音连接中... </span>
@@ -57,10 +67,23 @@ const closeAvatarDialog = (data) => {
         "
         placement="bottom-end"
       >
-        <span class="phoneStatus is-active" @click="closePhoneConn(1)">
+        <span :class="props.audio.volume>1?'phoneStatus is-active':'phoneStatus'" @click="closePhoneConn(1)">
           <el-icon><Phone /></el-icon>
+          <!-- <el-icon><Microphone /></el-icon> -->
         </span>
       </el-tooltip>
+      <div class="audioVolume" v-if="this.$store.state.phoneInfo.room_id !== null">
+        <span>
+          <el-icon><Microphone /></el-icon>
+        </span>
+        <el-slider v-model="props.audio.ratio" size="small" max="1" step="0.01"/>
+      </div>
+      <div class="audioVolume" v-if="this.$store.state.phoneInfo.room_id !== null">
+        <span>
+          <el-icon><Headset /></el-icon>
+        </span>
+        <el-slider v-model="props.Headset.ratio" :show-tooltip="false" size="small" max="1" step="0.01"/>
+      </div>
       <el-popover
         placement="bottom"
         :width="200"
@@ -146,6 +169,41 @@ const closeAvatarDialog = (data) => {
     .el-avatar {
       border: 3px solid rgba(0, 0, 0, 0);
     }
+    .audioVolume {
+      width: 100px;
+      margin:0px 15px;
+      display: flex;
+      align-items: center;
+      .el-slider{
+        .el-slider__runway{
+          .el-slider__button-wrapper{
+            .el-slider__button{
+              opacity: .8;
+              width:12px;
+              height: 12px;
+
+            }
+          }
+        }
+      }
+      span {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        font-size: 20px;
+        position: relative;
+      }
+      .is-stop{
+        &::after{
+          content: "";
+          border-top: 1px solid red;
+          position:absolute;
+          width: calc(100% - 4px);
+          transform: translateY(50%) rotate(45deg);
+        }
+      }
+    }
     .myMessage {
       width: 40px;
       height: 40px;
@@ -167,16 +225,18 @@ const closeAvatarDialog = (data) => {
       font-size: 18px;
     }
     .phoneStatus {
-      font-size: 22px;
-      width: 40px;
-      height: 40px;
+      box-sizing: border-box;
+      font-size: 21px;
+      width: 35px;
+      height: 35px;
+      color: black;
       display: flex;
       justify-content: center;
+      border-radius: 22px;
       align-items: center;
-      margin-right: 10px;
       &.is-active {
-        color: white;
-        background-color: rgb(0, 204, 153);
+        // color: white;
+        border: 3px solid rgb(0, 204, 153);
         border-radius: 22px;
       }
     }

@@ -5,6 +5,7 @@ import {
   getThisFriendInfo,
   getPrivateChatRecord,
   uploadPicture,
+  backMsg,
 } from "@/api/auth";
 import { timestampToTime } from "@/utils/formatTime.js";
 import { ElMessage, ElNotification } from "element-plus";
@@ -70,7 +71,7 @@ const sendPicture = () => {
   });
 };
 const computeHeight = (e) => {
-  console.log(e);
+  
 };
 const checkPicture = (file) => {
   const isIMAGE =
@@ -115,6 +116,11 @@ const sendWebSocketMsg = (type,room_id) => {
 const websocketOnMessage = (e) => {
   let msgJson = JSON.parse(e.data);
   if (msgJson.status == 200) {
+    msgJson.msgFormat = JSON.parse(JSON.parse(msgJson.message)).msg;
+    if (msgJson.type === "B") {
+      blankMsg(msgJson.msgFormat)
+      return
+    }
     if (msgJson.user_id == store.state.userInfo.id) {
       msgJson.me = 1;
       msgJson.username = store.state.userInfo.username;
@@ -122,10 +128,11 @@ const websocketOnMessage = (e) => {
       msgJson.me = 0;
       msgJson.username = friendInfo.value.friendName;
     }
-    msgJson.msgFormat = JSON.parse(JSON.parse(msgJson.message)).msg;
     if (msgJson.type === "P") {
       msgJson.loading = true;
     }
+    msgJson.withdrawing = false;
+    console.log(msgJson)
     msgList.push(msgJson);
     nextTick(() => {
       if(recordContainer.value.scrollTop!==null){
@@ -149,6 +156,7 @@ const websocketOnOpen = (e) => {
     store.commit("saveChannel", room_id);
     store.commit("saveFriend", {id:friendId,name:friendInfo.value.friendName});
     for (let item of res.record) {
+      item.withdrawing = false
       if (item.user_id == store.state.userInfo.id) {
         item.me = 1;
         item.username = store.state.userInfo.username;
@@ -158,12 +166,11 @@ const websocketOnOpen = (e) => {
       }
       item.time = item.add_time;
       item.msgFormat = item.content;
-      if (item.type === "P") {
+      if(item.type == 'P'){
         item.loading = true;
       }
       msgList.push(item);
     }
-
     nextTick(() => {
       loadingRecord.value = false;
       recordContainer.value.scrollTop = recordContainer.value.scrollHeight;
@@ -191,6 +198,26 @@ const setrefsFun = (el, item) => {
     imgRefs[item] = el;
   }
 };
+const blankMsg = (id) => {
+  let msg = msgList[msgList.findIndex((value)=>value.id == id)]
+  msg.content = null
+  msg.msgFormat = null
+  msg.back = true
+}
+const back = (id) => {
+  let item = msgList[msgList.findIndex((value)=>value.id == id)]
+  item.withdrawing = true
+  backMsg({
+    id:id
+    }).then(res =>{
+    if(res.status === 1){
+      item.withdrawing = false
+      blankMsg(id)
+      msgForm.msg = item.id
+      sendWebSocketMsg("B",room_id)
+    }
+  })
+}
 // const closePhoneConn = () => {
 //   msgForm.msg = "离开语音";
 //   sendWebSocketMsg("R",store.state.phoneInfo.room_id);
@@ -272,10 +299,42 @@ const setrefsFun = (el, item) => {
           <div
             v-for="item in msgList"
             :key="item.id"
-            class="bubble"
-            :style="item.me == 1 ? 'justify-content:right' : ''"
           >
-            <h1 v-if="item.type === 'R'" class="systemMsg">
+            <div class="bubble" :style="item.me == 1 ? 'justify-content:right' : ''" v-loading="item.withdrawing" v-if="!item.back">
+              <ul class="msgBtns" v-if="!item.withdrawing">
+                <li v-if="item.me == 1" @click="back(item.id)">
+                <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="撤回消息"
+                    placement="top"
+                  >
+                    <el-icon><Back /></el-icon>
+                  </el-tooltip>
+                </li>
+                <li>
+                  <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="删除消息"
+                    placement="top"
+                  >
+                    <el-icon><Delete /></el-icon>
+                  </el-tooltip>
+                </li>
+                <li>
+                  <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="分享"
+                    placement="top"
+                  >
+                    <el-icon><ChatLineSquare /></el-icon>
+                  </el-tooltip>
+                </li>
+
+              </ul>
+              <h1 v-if="item.type === 'R'" class="systemMsg">
               {{ item.username }} {{ item.msgFormat }}
             </h1>
             <img
@@ -329,6 +388,14 @@ const setrefsFun = (el, item) => {
               "
               alt=""
             />
+            </div>
+            <div class="backMsg" v-if="item.back">
+              <span>
+                <b v-if="item.me == 1">您</b>
+                <b v-if="item.me != 1">对方</b>
+                撤回了一条消息
+              </span>
+            </div>
           </div>
         </transition-group>
       </div>
@@ -444,21 +511,53 @@ const setrefsFun = (el, item) => {
       border-radius: 10px;
       background: #ededed;
     }
-    .bubbles-enter-active,
-    .bubbles-leave-active {
-      transition: all 1s;
-    }
-    .bubbles-enter,
-    .bubbles-leave-to {
-      opacity: 0;
-      transform: translateY(30px);
-    }
+    // .bubbles-enter-active,
+    // .bubbles-leave-active {
+    //   transition: all 1s;
+    // }
+    // .bubbles-enter,
+    // .bubbles-leave-to {
+    //   opacity: 0;
+    //   transform: translateY(30px);
+    // }
 
     .bubble {
+      .msgBtns {
+        margin: 0px;
+        height:30px;
+        padding: 0px;
+        border-radius: 5px;
+        background-color: rgb(150, 150, 150);
+        display: none;
+        transition: all .5s ease;
+        align-items: center;
+        color: white;
+        font-weight: 550;
+        position: absolute;
+        right: 50%;
+        top: -15px;
+        transform: translateX(50%);
+        list-style: none;
+        li {
+          padding: 5px 7px;
+          cursor: pointer;
+          border-right: 2px solid #ffffff;
+          transition: all .5s ease;
+          &:hover{
+            background-color: rgb(54, 54, 54);
+          }
+        }
+        li:last-child{
+          border-right: none
+        }
+      }
       &:hover {
         background-color: rgb(243, 243, 243);
         box-shadow: $shadow3;
         border-radius: 5px;
+      }
+      &:hover .msgBtns {
+        display: flex;
       }
       .systemMsg {
         @include display-center;
@@ -469,7 +568,8 @@ const setrefsFun = (el, item) => {
       }
       display: flex;
       padding: 10px;
-      margin: 10px;
+      margin: 15px;
+      position: relative;
       .saySomething {
         display: flex;
         flex-direction: column;
@@ -510,6 +610,18 @@ const setrefsFun = (el, item) => {
         height: 40px;
         border-radius: 50px;
         border: 5px solid rgb(202, 202, 202);
+      }
+    }
+    .backMsg{
+      display: flex;
+      justify-content: center;
+      margin: 10px 0px;
+      span{
+        background-color:rgba(168, 168, 168, 0.555);
+        padding: 3px 6px;
+        border-radius: 6px;
+        font-weight: 600;
+        color: rgba(41, 41, 41, 0.767);
       }
     }
   }

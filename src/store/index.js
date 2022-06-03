@@ -81,6 +81,7 @@ const store = createStore({
     },
     setTRTCInfo(state,userSig){
       localStorage.setItem('TRTCInfo',JSON.stringify(userSig))
+      state.TRTCInfo['userSig'] = userSig.userSig
     },
     setBlock(state) {
       state.token = ""

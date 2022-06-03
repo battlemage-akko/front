@@ -71,6 +71,7 @@ export default {
       default: false
     }
   },
+  
   data() {
     return {
       // vueCropper组件 裁剪配置信息
